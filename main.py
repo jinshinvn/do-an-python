@@ -2,10 +2,14 @@ from tkinter import Tk
 from tkinter import Label
 from tkinter import Canvas
 from tksheet import Sheet
+from PIL import ImageTk, Image
 import json
+import threading
+import time
 
-tblWidth = 865
-tblHeight = 600
+winClosed = False
+tblWidth = 825
+tblHeight = 425
 appWidth = 1200
 appHeight = 768
 appIco = ''
@@ -13,7 +17,23 @@ navWidth = appWidth/4
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 
+def startAutoSave():
+    global thrd1
+    thrd1 = threading.Thread(target = autosave, args = ())
+    thrd1.start()
+    return
 
+def autosave():
+    print('auto saving...')
+    time.sleep(2)
+    if (winClosed):
+        try:
+            thrd1.join()
+        except (RuntimeError):
+            pass
+        return
+    else:
+        autosave()
 
 def genDashUI():
     dashbrd.title('Dashboard')
@@ -119,8 +139,21 @@ def genNav():
     lbl7.place(x=navWidth/5*2, y=(appHeight-20)/3+LblPlacing[6])
     lbl8.place(x=navWidth/5*2, y=(appHeight-20)/3+LblPlacing[7])
 
-    lftNavDiv.place(x=10, y=10) 
+    lftNavDiv.place(x=0, y=0) 
 
+def genTopBanner():
+    global topimg
+    # warning by H.K.Phi
+    # please don't remove this global. The variable photo is a local variable which gets garbage collected after the class is instantiated.
+    # https://stackoverflow.com/questions/16424091/why-does-tkinter-image-not-show-up-if-created-in-a-function
+    rawtopimg = Image.open('./img/hotel.jpg')
+    rawtopimg = rawtopimg.resize((600, 200), Image.Resampling.LANCZOS)
+    topimg = ImageTk.PhotoImage(rawtopimg)
+    lblTopImg = Label(dashbrd, image = topimg)
+    lblTopImg.place(x = 0, y = 0, relx = .25, rely = .25)
+
+def genNv():
+    
     # initialize json
     dataNv = [
         ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị'],
@@ -150,6 +183,7 @@ def genNav():
     with open('./json/data.json', 'w', encoding='utf-8') as fi:
         json.dump(dctNv, fi, ensure_ascii=False, indent=4)
 
+    global rSh
     rSh = Sheet(dashbrd, 
         show_table = True,
         width = tblWidth,
@@ -162,11 +196,13 @@ def genNav():
     # rSh.set_cell_data(0, 0, value = 999, set_copy = True, redraw = False)
     rSh.set_all_cell_sizes_to_text(redraw = True)
     rSh.enable_bindings('all')
-    
-    rSh.place(x=325, y=50)
-
+    rSh.place(x=340, y=200)
 
 dashbrd = Tk()
+startAutoSave()
 genDashUI()
 genNav()
+genTopBanner()
+genNv()
 dashbrd.mainloop()
+winClosed = True
