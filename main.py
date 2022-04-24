@@ -2,11 +2,10 @@ from tkinter import Tk
 from tkinter import Label
 from tkinter import Canvas
 from tksheet import Sheet
+import json
 
-#ajshdjasd
-
-tblWidth = 800
-tblHeight = 400
+tblWidth = 865
+tblHeight = 600
 appWidth = 1200
 appHeight = 768
 appIco = ''
@@ -122,26 +121,49 @@ def genNav():
 
     lftNavDiv.place(x=10, y=10) 
 
-    # tblData = [
-    #         [f"Row {r}, Column {c}\nnewline1\nnewline2" for c in range(5)] for r in range(3)
-    #     ]
-
-    tblData = [
-        [2, 3, 4, 5, 6],
-        [2, 4, 10]
+    # initialize json
+    dataNv = [
+        ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị'],
+        ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị'],
+        ['B003', 'Huỳnh Nguyên', 'Khang', 'Nam', 1982, 'Bình Phước', 'CFO', 'Hội đồng quản trị'],
+        ['G001', 'Hoàng Hòa', 'Hợp', 'Nam', 1982, 'Bình Thuận', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
+        ['G002', 'Lưu Duy', 'Hiếu', 'Nam', 1991, 'Long An', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
+        ['G003', 'Hồ Văn', 'Thông', 'Nam', 1998, 'Gia Lai', 'Trưởng phòng', 'Bảo vệ', 6000000, 1000000],
+        ['G004', 'Nguyễn Văn', 'Sinh', 'Nam', 1991, 'TP.HCM', 'Nhân viên', 'Bảo vệ', 5000000, 600000],
+        ['E001', 'Châu Văn', 'Đạt', 'Nam', 1998, 'Quảng Nam', 'Trưởng phòng', 'Kế toán', 8000000, 600000],
+        ['E002', 'Nguyễn Thị', 'Nga', 'Nữ', 1991, 'Long An', 'Nhân viên', 'Kế toán', 7000000, 600000],
+        ['E003', 'Vũ Việt', 'Đông', 'Nam', 1982, 'Tiền Giang', 'Nhân viên', 'Kế toán', 7000000, 600000],
+        ['C001', 'Đào Ngọc', 'Cẩm', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
+        ['C002', 'Huỳnh Thụy Phương', 'Khánh', 'Nữ', 1996, 'TP.HCM', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
+        ['F001', 'Nguyễn Văn Gia', 'Trí', 'Nam', 1992, 'Tiền Giang', 'Trưởng phòng', 'Quản trị nhân sự', 6000000, 600000],
+        ['F002', 'Lưu Ngọc Hoài ', 'Trinh', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Quản trị nhân sự', 6000000, 600000],
+        ['Z001', 'Đoàn Trần Văn ', 'Kha', 'Nam', 1996, 'Long An', 'Bếp trưởng', 'Bếp ăn', 4000000, 600000],
+        ['Z002', 'David ', 'Joe', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 8700000, 900000],
+        ['Z003', 'Phạm Toàn ', 'Thắng', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 4000000, 600000],
+        ['M001', 'Phạm Quốc ', 'Khải', 'Nam', 1996, 'Tiền Giang', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
+        ['M002', 'Nguyễn Võ ', 'Lợi', 'Nam', 2000, 'Gia Lai', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
+        ['T001', 'Lưu Bích ', 'Thoa', 'Nữ', 1992, 'Quảng Nam', 'Nhân viên', 'massage', 7000000, 600000],
+        ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000]
     ]
+    dctNv = {'nhanVien':dataNv}
+
+    with open('./json/data.json', 'w', encoding='utf-8') as fi:
+        json.dump(dctNv, fi, ensure_ascii=False, indent=4)
 
     rSh = Sheet(dashbrd, 
         show_table = True,
         width = tblWidth,
         height = tblHeight,
         show_header = True,
-        data = tblData
+        row_height = 70,
+        data = dataNv,
+        headers = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
     )
-    rSh.set_cell_data(0, 0, value = 999, set_copy = True, redraw = False)
+    # rSh.set_cell_data(0, 0, value = 999, set_copy = True, redraw = False)
+    rSh.set_all_cell_sizes_to_text(redraw = True)
     rSh.enable_bindings('all')
     
-    rSh.place(x=200, y=50)
+    rSh.place(x=325, y=50)
 
 
 dashbrd = Tk()
