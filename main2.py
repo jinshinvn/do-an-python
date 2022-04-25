@@ -1,18 +1,22 @@
-import json
+# Import required libraries
+from tkinter import *
+from PIL import ImageTk, Image
 
-# myDict = {
-#     'admin': 'admin',
-#     'huỳnh khả phi': '3301'
-# }
+# Create an instance of tkinter window
+win = Tk()
 
-# with open('userData.json', 'w', encoding='utf-8') as userData:
-#     json.dump(
-#         myDict, 
-#         userData, 
-#         ensure_ascii=False,
-#         indent=4
-#     )
+# Define the geometry of the window
+win.geometry("700x500")
 
-with open('userData.json', encoding='utf-8') as json_file:
-    data = json.load(json_file)
-    print(data)
+frame = Frame(win, width=600, height=400)
+
+frame.place(anchor='center', relx=0.5, rely=0.5)
+
+# Create an object of tkinter ImageTk
+img = ImageTk.PhotoImage(Image.open("./img/gradient.png"))
+
+# Create a Label Widget to display the text or Image
+label = Label(frame, image = img)
+label.pack()
+
+win.mainloop()

@@ -5,38 +5,44 @@
             "Trịnh Quang",
             "Hòa",
             "Nam",
-            1998,
+            1979,
             "TP.HCM",
             "CEO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "B002",
             "Kim Đức",
             "Long",
             "Nam",
-            1998,
+            1983,
             "Quảng Nam",
             "CTO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "B003",
             "Huỳnh Nguyên",
             "Khang",
             "Nam",
-            1998,
+            1982,
             "Bình Phước",
             "CFO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "G001",
             "Hoàng Hòa",
             "Hợp",
             "Nam",
-            1998,
-            "Bình Dương",
+            1982,
+            "Bình Thuận",
             "Nhân viên",
             "Bảo vệ",
             5000000,
@@ -47,7 +53,7 @@
             "Lưu Duy",
             "Hiếu",
             "Nam",
-            1998,
+            1991,
             "Long An",
             "Nhân viên",
             "Bảo vệ",
@@ -71,7 +77,7 @@
             "Nguyễn Văn",
             "Sinh",
             "Nam",
-            1998,
+            1991,
             "TP.HCM",
             "Nhân viên",
             "Bảo vệ",
@@ -95,7 +101,7 @@
             "Nguyễn Thị",
             "Nga",
             "Nữ",
-            1998,
+            1991,
             "Long An",
             "Nhân viên",
             "Kế toán",
@@ -107,7 +113,7 @@
             "Vũ Việt",
             "Đông",
             "Nam",
-            1998,
+            1982,
             "Tiền Giang",
             "Nhân viên",
             "Kế toán",
@@ -119,7 +125,7 @@
             "Đào Ngọc",
             "Cẩm",
             "Nữ",
-            1998,
+            1992,
             "Bình Dương",
             "Nhân viên",
             "Vệ sinh",
@@ -131,7 +137,7 @@
             "Huỳnh Thụy Phương",
             "Khánh",
             "Nữ",
-            1998,
+            1996,
             "TP.HCM",
             "Nhân viên",
             "Vệ sinh",
@@ -143,11 +149,11 @@
             "Nguyễn Văn Gia",
             "Trí",
             "Nam",
-            1998,
+            1992,
             "Tiền Giang",
             "Trưởng phòng",
             "Quản trị nhân sự",
-            4000000,
+            6000000,
             600000
         ],
         [
@@ -155,11 +161,11 @@
             "Lưu Ngọc Hoài ",
             "Trinh",
             "Nữ",
-            1998,
+            1992,
             "Bình Dương",
             "Nhân viên",
             "Quản trị nhân sự",
-            4000000,
+            6000000,
             600000
         ],
         [
@@ -167,7 +173,7 @@
             "Đoàn Trần Văn ",
             "Kha",
             "Nam",
-            1998,
+            1996,
             "Long An",
             "Bếp trưởng",
             "Bếp ăn",
@@ -180,11 +186,11 @@
             "Joe",
             "Nam",
             1998,
-            "Tiền Giang",
+            "TP.HCM",
             "Đầu bếp",
             "Bếp ăn",
-            4000000,
-            600000
+            8700000,
+            900000
         ],
         [
             "Z003",
@@ -203,11 +209,11 @@
             "Phạm Quốc ",
             "Khải",
             "Nam",
-            1998,
+            1996,
             "Tiền Giang",
             "Tiếp tân",
             "Lễ tân",
-            4000000,
+            3000000,
             600000
         ],
         [
@@ -215,11 +221,11 @@
             "Nguyễn Võ ",
             "Lợi",
             "Nam",
-            1998,
+            2000,
             "Gia Lai",
             "Tiếp tân",
             "Lễ tân",
-            4000000,
+            3000000,
             600000
         ],
         [
@@ -227,11 +233,11 @@
             "Lưu Bích ",
             "Thoa",
             "Nữ",
-            1998,
+            1992,
             "Quảng Nam",
             "Nhân viên",
             "massage",
-            4000000,
+            7000000,
             600000
         ],
         [
@@ -239,12 +245,143 @@
             "Trần Thục ",
             "Quyên",
             "Nữ",
-            1998,
-            "Tiền Giang",
+            2000,
+            "Tây Ninh",
             "Nhân viên",
             "massage",
-            4000000,
+            7000000,
             600000
+        ]
+    ],
+    "khachHang": [
+        [
+            "KH001",
+            "Nguyễn Thế",
+            "Doanh",
+            "Nam",
+            1983,
+            "286 Str. 3/2, Ward 12, Dist",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user01@gmail.com"
+        ],
+        [
+            "KH002",
+            "Úc Quốc",
+            "Hải",
+            "Nam",
+            1982,
+            " 95 Nguyen Hong Dao street, Tan Binh District",
+            312509076,
+            "Việt Nam",
+            "09753650117",
+            "user02@gmail.com"
+        ],
+        [
+            "KH003",
+            "Nguyễn Thiện",
+            "Ân",
+            "Nam",
+            1979,
+            "49 Le Trung Nghia, Ward. 12, Tan Binh District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user03@gmail.com"
+        ],
+        [
+            "KH004",
+            "Vương Đăng",
+            "Đạt",
+            "Nam",
+            1982,
+            "128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user04@gmail.com"
+        ],
+        [
+            "KH005",
+            "Trang Diệu",
+            "Nương",
+            "Nữ",
+            1991,
+            "Tan Quy Tay Ward, Sa Dec Township",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user05@gmail.com"
+        ],
+        [
+            "KH006",
+            "Nguyễn Chiêu",
+            "Dương",
+            "Nữ",
+            1998,
+            "659 Xo Viet Nghe Tinh, Binh Thanh District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user06@gmail.com"
+        ],
+        [
+            "KH007",
+            "Bùi Thúy",
+            "Vy",
+            "Nam",
+            1991,
+            "39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user07@gmail.com"
+        ]
+    ],
+    "phieuThue": [
+        [
+            "PTP0001",
+            [
+                "KH001"
+            ],
+            "M001",
+            {
+                "DV001": 2,
+                "DV002": 1
+            },
+            "20/10/2021",
+            "20/12/2021",
+            false,
+            "",
+            0,
+            0,
+            0
+        ]
+    ],
+    "phieuThanhToan": [
+        [
+            "PTT0001",
+            [
+                "KH001"
+            ],
+            "M001",
+            "<tên nv Auto điền>",
+            12,
+            0,
+            0.15,
+            0,
+            "<ngày in auto đi>"
+        ]
+    ],
+    "pNhapTbiAndFood": [],
+    "nhaCungCap": [
+        [
+            "NCC001",
+            "Pepsi",
+            "Binh Duong",
+            "0123456789",
+            "uuuy328@gmail.com"
         ]
     ]
 }
