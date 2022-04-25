@@ -8,7 +8,9 @@
             1979,
             "TP.HCM",
             "CEO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "B002",
@@ -18,7 +20,9 @@
             1983,
             "Quảng Nam",
             "CTO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "B003",
@@ -28,7 +32,9 @@
             1982,
             "Bình Phước",
             "CFO",
-            "Hội đồng quản trị"
+            "Hội đồng quản trị",
+            null,
+            null
         ],
         [
             "G001",
@@ -245,6 +251,137 @@
             "massage",
             7000000,
             600000
+        ]
+    ],
+    "khachHang": [
+        [
+            "KH001",
+            "Nguyễn Thế",
+            "Doanh",
+            "Nam",
+            1983,
+            "286 Str. 3/2, Ward 12, Dist",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user01@gmail.com"
+        ],
+        [
+            "KH002",
+            "Úc Quốc",
+            "Hải",
+            "Nam",
+            1982,
+            " 95 Nguyen Hong Dao street, Tan Binh District",
+            312509076,
+            "Việt Nam",
+            "09753650117",
+            "user02@gmail.com"
+        ],
+        [
+            "KH003",
+            "Nguyễn Thiện",
+            "Ân",
+            "Nam",
+            1979,
+            "49 Le Trung Nghia, Ward. 12, Tan Binh District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user03@gmail.com"
+        ],
+        [
+            "KH004",
+            "Vương Đăng",
+            "Đạt",
+            "Nam",
+            1982,
+            "128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user04@gmail.com"
+        ],
+        [
+            "KH005",
+            "Trang Diệu",
+            "Nương",
+            "Nữ",
+            1991,
+            "Tan Quy Tay Ward, Sa Dec Township",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user05@gmail.com"
+        ],
+        [
+            "KH006",
+            "Nguyễn Chiêu",
+            "Dương",
+            "Nữ",
+            1998,
+            "659 Xo Viet Nghe Tinh, Binh Thanh District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user06@gmail.com"
+        ],
+        [
+            "KH007",
+            "Bùi Thúy",
+            "Vy",
+            "Nam",
+            1991,
+            "39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District",
+            312509075,
+            "Việt Nam",
+            "09753650117",
+            "user07@gmail.com"
+        ]
+    ],
+    "phieuThue": [
+        [
+            "PTP0001",
+            [
+                "KH001"
+            ],
+            "M001",
+            {
+                "DV001": 2,
+                "DV002": 1
+            },
+            "20/10/2021",
+            "20/12/2021",
+            false,
+            "",
+            0,
+            0,
+            0
+        ]
+    ],
+    "phieuThanhToan": [
+        [
+            "PTT0001",
+            [
+                "KH001"
+            ],
+            "M001",
+            "<tên nv Auto điền>",
+            12,
+            0,
+            0.15,
+            0,
+            "<ngày in auto đi>"
+        ]
+    ],
+    "pNhapTbiAndFood": [],
+    "nhaCungCap": [
+        [
+            "NCC001",
+            "Pepsi",
+            "Binh Duong",
+            "0123456789",
+            "uuuy328@gmail.com"
         ]
     ]
 }

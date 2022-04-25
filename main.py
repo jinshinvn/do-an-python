@@ -1,7 +1,9 @@
 from tkinter import Tk
 from tkinter import Label
 from tkinter import Canvas
+from tkinter import Button
 from tksheet import Sheet
+from pynput import keyboard
 from PIL import ImageTk, Image
 import json
 import threading
@@ -16,6 +18,9 @@ appIco = ''
 navWidth = appWidth/4
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
+
+def updateDb():
+    return
 
 def startAutoSave():
     global thrd1
@@ -34,6 +39,21 @@ def autosave():
         return
     else:
         autosave()
+
+def startKeyListener():
+    def on_press(key):
+        if (winClosed):
+            return False
+        if key == keyboard.Key.enter:
+            updateDb()
+        try:
+            k = key.char 
+        except:
+            k = key.name 
+        
+    global listener
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()  
 
 def genDashUI():
     dashbrd.title('Dashboard')
@@ -152,13 +172,13 @@ def genTopBanner():
     lblTopImg = Label(dashbrd, image = topimg)
     lblTopImg.place(x = 0, y = 0, relx = .25, rely = .25)
 
-def genNv():
+def genRight():
     
     # initialize json
     dataNv = [
-        ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị'],
-        ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị'],
-        ['B003', 'Huỳnh Nguyên', 'Khang', 'Nam', 1982, 'Bình Phước', 'CFO', 'Hội đồng quản trị'],
+        ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', None, None],
+        ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị', None, None],
+        ['B003', 'Huỳnh Nguyên', 'Khang', 'Nam', 1982, 'Bình Phước', 'CFO', 'Hội đồng quản trị', None, None],
         ['G001', 'Hoàng Hòa', 'Hợp', 'Nam', 1982, 'Bình Thuận', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
         ['G002', 'Lưu Duy', 'Hiếu', 'Nam', 1991, 'Long An', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
         ['G003', 'Hồ Văn', 'Thông', 'Nam', 1998, 'Gia Lai', 'Trưởng phòng', 'Bảo vệ', 6000000, 1000000],
@@ -177,11 +197,57 @@ def genNv():
         ['M002', 'Nguyễn Võ ', 'Lợi', 'Nam', 2000, 'Gia Lai', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
         ['T001', 'Lưu Bích ', 'Thoa', 'Nữ', 1992, 'Quảng Nam', 'Nhân viên', 'massage', 7000000, 600000],
         ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000]
+        ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000]
+        ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
+    
     ]
-    dctNv = {'nhanVien':dataNv}
+    dataKh = [
+        ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
+        ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
+        ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
+        ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
+        ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
+        ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
+        ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
+    ]
+    dataPhieuThue = [
+        ['PTP0001', ['KH001'], 'M001', {'DV001':2, 'DV002':1}, '20/10/2021', '20/12/2021', False, '', 0, 0, 0]
+    ]
+    dataPhieuTT = [
+        ['PTT0001', ['KH001'], 'M001', '<tên nv Auto điền>', 12, 0, .15, 0, '<ngày in auto đi>']
+    ]
+    dataNcc = [
+        ['NCC001', 'Pepsi', 'Binh Duong', '0123456789', 'uuuy328@gmail.com']
+    ]
+    phieuNhapTbAndFood = [
+        ['PN001', {'PEPSI1', 'Nước ngọt lon Pepsi', 20}, 'NCC001', '<auto điền>', 'K001' ]
+    ]
+    dataDichVu = [
+        ['DV001', 'Xông hơi', 250000]
+    ]
+    dataPh = [
+        ['A101', 'available', 'Phòng thường 1 giường','normal', ['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
+        ['A102', 'available', 'Phòng thường 2 giường','normal', ['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
+        ['B202', 'available', 'Phòng cao cấp 1 giường','elite', ['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']],
+        ['B201', 'available', 'Phòng thường 2 giường','elite', ['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']],
+        ['C301', 'available', 'Phòng thượng hạng 1 giường','vip', ['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']],
+        ['C303', 'occupied', 'Phòng thượng hạng 2 giường','vip', ['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']],
+        ['A103', 'maintaining', 'Phòng thườnng 1 giường','normal', ['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
+    ]
+    dct = {
+        'nhanVien': dataNv,
+        'khachHang': dataKh,
+        'phieuThue': dataPhieuThue,
+        'phieuThanhToan': dataPhieuTT,
+        'pNhapTbiAndFood': phieuNhapTbAndFood,
+        'nhaCungCap': dataNcc,
+        'phong': dataPh
+    }
+
+    print(dct['nhaCungCap'])
 
     with open('./json/data.json', 'w', encoding='utf-8') as fi:
-        json.dump(dctNv, fi, ensure_ascii=False, indent=4)
+        json.dump(dct, fi, ensure_ascii=False, indent=4)
 
     global rSh
     rSh = Sheet(dashbrd, 
@@ -198,11 +264,24 @@ def genNv():
     rSh.enable_bindings('all')
     rSh.place(x=340, y=200)
 
+def genBotBut():
+    botBut = Button(
+        dashbrd,
+        text = 'Save',
+        bg = 'red'
+    )
+    botBut.place(x=1000, y=600)
+    return
+
 dashbrd = Tk()
-startAutoSave()
+# startAutoSave()
+startKeyListener()
 genDashUI()
 genNav()
 genTopBanner()
-genNv()
+genRight()
+
+genBotBut()
 dashbrd.mainloop()
 winClosed = True
+listener.join()  
