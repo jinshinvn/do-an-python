@@ -20,6 +20,7 @@ heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 
 def updateDb():
+    print('update db')
     return
 
 def startAutoSave():
@@ -70,13 +71,13 @@ def genNav():
         dashbrd,
         width = navWidth,
         height = appHeight,
-        background = 'blue'
+        background = 'white'
     )
 
     lftNavDiv.create_rectangle(
         0, 0, navWidth, appHeight,
-        outline = "grey",
-        fill = 'grey'
+        outline = "black",
+        fill = 'white'
     )
 
     def round_rectangle(x1, y1, x2, y2, radius=25, **kwargs):
@@ -101,54 +102,77 @@ def genNav():
                 x1, y1+radius,
                 x1, y1]
         return lftNavDiv.create_polygon(points, **kwargs, smooth=True)
-    my_rectangle = round_rectangle(50, 50, 150, 100, radius=20, fill="blue")
+    def drawRec():
+        x = [ 
+            
+        ]
+        y = [i for i in range(310, 500, 50)]
+        print(y)
+
+        my_rectangle1 = round_rectangle(50, 260, 260, 310, radius=1, fill="blue")
+        my_rectangle2 = round_rectangle(50, 320, 260, 370, radius=1, fill="blue")
+        my_rectangle3 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+        my_rectangle4 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+        my_rectangle5 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+        my_rectangle6 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+        my_rectangle7 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+        my_rectangle8 = round_rectangle(50, 380, 260, 430, radius=1, fill="blue")
+    drawRec()
 
     brand = Label(
         dashbrd,
         text = 'Khách sạn SGU',
-        font = ('Roboto', 14),
+        font = ('Chirp', 14),
         foreground = 'black',
         bg = 'white'
     )
     lftNavDiv.create_line(20, heightLineNav, navWidth-20, heightLineNav, fill = 'white', width = 3)
     lbl1 = Label(
         text = 'Phiếu thuê',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl2 = Label(
         text = 'Hóa đơn',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl3 = Label(
         text = 'Phòng',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl4 = Label(
         text = 'Nhân viên',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl5 = Label(
         text = 'Khách hàng' ,
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl6 = Label(
         text = 'Dịch vụ',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl7 = Label(
         text = 'Kho hàng',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
     lbl8 = Label(
         text = 'Thống kê',
-        font = ('Roboto', 14)
+        bg = 'white',
+        font = ('Chirp', 14)
     )
 
     brand.place(x=10, y=10)
 
     LblPlacing = [30]
     for i in range(1,8):
-        LblPlacing.append(LblPlacing[i-1]+42.5)
+        LblPlacing.append(LblPlacing[i-1]+50)
 
     lbl1.place(x=navWidth/5*2, y=(appHeight-20)/3+LblPlacing[0])
     lbl2.place(x=navWidth/5*2, y=(appHeight-20)/3+LblPlacing[1])
@@ -163,9 +187,6 @@ def genNav():
 
 def genTopBanner():
     global topimg
-    # warning by H.K.Phi
-    # please don't remove this global. The variable photo is a local variable which gets garbage collected after the class is instantiated.
-    # https://stackoverflow.com/questions/16424091/why-does-tkinter-image-not-show-up-if-created-in-a-function
     rawtopimg = Image.open('./img/hotel.jpg')
     rawtopimg = rawtopimg.resize((600, 200), Image.Resampling.LANCZOS)
     topimg = ImageTk.PhotoImage(rawtopimg)
@@ -196,8 +217,8 @@ def genRight():
         ['M001', 'Phạm Quốc ', 'Khải', 'Nam', 1996, 'Tiền Giang', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
         ['M002', 'Nguyễn Võ ', 'Lợi', 'Nam', 2000, 'Gia Lai', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
         ['T001', 'Lưu Bích ', 'Thoa', 'Nữ', 1992, 'Quảng Nam', 'Nhân viên', 'massage', 7000000, 600000],
-        ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000]
-        ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000]
+        ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000],
+        ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000],
         ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
     
     ]
@@ -216,14 +237,23 @@ def genRight():
     dataPhieuTT = [
         ['PTT0001', ['KH001'], 'M001', '<tên nv Auto điền>', 12, 0, .15, 0, '<ngày in auto đi>']
     ]
-    dataNcc = [
-        ['NCC001', 'Pepsi', 'Binh Duong', '0123456789', 'uuuy328@gmail.com']
-    ]
     phieuNhapTbAndFood = [
-        ['PN001', {'PEPSI1', 'Nước ngọt lon Pepsi', 20}, 'NCC001', '<auto điền>', 'K001' ]
+        ['P001','H001' 'Coca-cola lon', '1000', 'NCC001', '', 'NV01', 500000, '10/3/2022', ''],
+        ['P002','H002' 'Pepsi lon', '1000', 'NCC002', '', 'NV01', 500000, '11/3/2022', ''],
+        ['P003','H003' 'Bia Sài Gòn', '1000', 'NCC003', '', 'NV01', 500000, '12/3/2022', ''],
+        ['P004','H004' 'Trái cây', '20', 'NCC004', '', 'NV01', 100000, '14/3/2022', ''],
+        ['P005','H005' 'Khăn lạnh', '1000', 'NCC005', '', 'NV01', 100000, '19/3/2022', ''],
+        ['P006','H006' 'Thực phẩm', '20', 'NCC006', '', 'NV02', 200000, '21/3/2022', ''],
+        ['P007','H007' 'Pepsi lon', '1000', 'NCC002', '', 'NV01', 500000, '25/3/2022', ''],
     ]
-    dataDichVu = [
-        ['DV001', 'Xông hơi', 250000]
+    dataDv = [
+        ['DV001', 'Xông hơi', 250000],
+        ['DV002', 'Massage', 500000],
+        ['DV003', 'Tắm hồ bơi', 200000],
+        ['DV004', 'Giặt ủi', 50000],
+        ['DV005', 'Ăn sáng', 500000],
+        ['DV006', 'Ăn trưa', 250000],
+        ['DV007', 'Ăn tối', 250000]
     ]
     dataPh = [
         ['A101', 'available', 'Phòng thường 1 giường','normal', ['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
@@ -240,14 +270,23 @@ def genRight():
         'phieuThue': dataPhieuThue,
         'phieuThanhToan': dataPhieuTT,
         'pNhapTbiAndFood': phieuNhapTbAndFood,
-        'nhaCungCap': dataNcc,
-        'phong': dataPh
+        'phong': dataPh,
+        'dichVu': dataDv
     }
 
-    print(dct['nhaCungCap'])
 
     with open('./json/data.json', 'w', encoding='utf-8') as fi:
         json.dump(dct, fi, ensure_ascii=False, indent=4)
+
+    with open('./json/data.json', 'r', encoding='utf-8') as fo:
+        dataRead = json.loads(fo.read())
+    
+    # print(json.dumps(dataRead['khachHang'], ensure_ascii=False, indent = 4))
+    dataTbl = json.dumps(dataRead['khachHang'], ensure_ascii=False)
+    dataTblList = json.loads(dataTbl)
+
+    nvHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
+
 
     global rSh
     rSh = Sheet(dashbrd, 
@@ -256,8 +295,8 @@ def genRight():
         height = tblHeight,
         show_header = True,
         row_height = 70,
-        data = dataNv,
-        headers = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
+        data = dataTblList,
+        headers = list(nvHeader)
     )
     # rSh.set_cell_data(0, 0, value = 999, set_copy = True, redraw = False)
     rSh.set_all_cell_sizes_to_text(redraw = True)
@@ -273,6 +312,8 @@ def genBotBut():
     botBut.place(x=1000, y=600)
     return
 
+
+
 dashbrd = Tk()
 # startAutoSave()
 startKeyListener()
@@ -284,4 +325,4 @@ genRight()
 genBotBut()
 dashbrd.mainloop()
 winClosed = True
-listener.join()  
+listener.join()
