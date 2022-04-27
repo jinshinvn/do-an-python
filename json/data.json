@@ -251,6 +251,30 @@
             "massage",
             7000000,
             600000
+        ],
+        [
+            "K001",
+            "Hứa Vĩnh ",
+            "Đức",
+            "Nam",
+            1990,
+            "Bến Tre",
+            "Nhân viên",
+            "Kho vận",
+            7000000,
+            600000
+        ],
+        [
+            "K002",
+            "Trần Phùng ",
+            "Thọ",
+            "Nam",
+            1998,
+            "TP.HCM",
+            "Nhân viên",
+            "Kho vận",
+            7000000,
+            600000
         ]
     ],
     "khachHang": [
@@ -374,14 +398,221 @@
             "<ngày in auto đi>"
         ]
     ],
-    "pNhapTbiAndFood": [],
-    "nhaCungCap": [
+    "pNhapTbiAndFood": [
         [
+            "P001",
+            "H001Coca-cola lon",
+            "1000",
             "NCC001",
-            "Pepsi",
-            "Binh Duong",
-            "0123456789",
-            "uuuy328@gmail.com"
+            "",
+            "NV01",
+            500000,
+            "10/3/2022",
+            ""
+        ],
+        [
+            "P002",
+            "H002Pepsi lon",
+            "1000",
+            "NCC002",
+            "",
+            "NV01",
+            500000,
+            "11/3/2022",
+            ""
+        ],
+        [
+            "P003",
+            "H003Bia Sài Gòn",
+            "1000",
+            "NCC003",
+            "",
+            "NV01",
+            500000,
+            "12/3/2022",
+            ""
+        ],
+        [
+            "P004",
+            "H004Trái cây",
+            "20",
+            "NCC004",
+            "",
+            "NV01",
+            100000,
+            "14/3/2022",
+            ""
+        ],
+        [
+            "P005",
+            "H005Khăn lạnh",
+            "1000",
+            "NCC005",
+            "",
+            "NV01",
+            100000,
+            "19/3/2022",
+            ""
+        ],
+        [
+            "P006",
+            "H006Thực phẩm",
+            "20",
+            "NCC006",
+            "",
+            "NV02",
+            200000,
+            "21/3/2022",
+            ""
+        ],
+        [
+            "P007",
+            "H007Pepsi lon",
+            "1000",
+            "NCC002",
+            "",
+            "NV01",
+            500000,
+            "25/3/2022",
+            ""
+        ]
+    ],
+    "phong": [
+        [
+            "A101",
+            "available",
+            "Phòng thường 1 giường",
+            "normal",
+            [
+                "1 giường",
+                " 1 tu lanh nho",
+                "1 bo ban ghe",
+                "1 may lanh",
+                "2 den"
+            ]
+        ],
+        [
+            "A102",
+            "available",
+            "Phòng thường 2 giường",
+            "normal",
+            [
+                "2 giường",
+                "1 tu lanh nho",
+                "1 bo ban ghe",
+                "1 may lanh",
+                "2 den"
+            ]
+        ],
+        [
+            "B202",
+            "available",
+            "Phòng cao cấp 1 giường",
+            "elite",
+            [
+                "1 giường",
+                "1 tu lanh lon",
+                "2 bo ban ghe ",
+                "1 may lanh",
+                "4 den",
+                "1 bon tam"
+            ]
+        ],
+        [
+            "B201",
+            "available",
+            "Phòng thường 2 giường",
+            "elite",
+            [
+                "2 giường",
+                "1 tu lanh lon",
+                "2 bo ban ghe ",
+                "1 may lanh",
+                "4 den",
+                "1 bon tam"
+            ]
+        ],
+        [
+            "C301",
+            "available",
+            "Phòng thượng hạng 1 giường",
+            "vip",
+            [
+                "1 giường",
+                "1 tu lanh lon",
+                "3 bo ban ghe ",
+                "2 may lanh",
+                "6 den",
+                "1 bon tam",
+                "dien thoai",
+                "quay bep  + minibar"
+            ]
+        ],
+        [
+            "C303",
+            "occupied",
+            "Phòng thượng hạng 2 giường",
+            "vip",
+            [
+                "2 giường",
+                "1 tu lanh lon",
+                "3 bo ban ghe ",
+                "2 may lanh",
+                "6 den",
+                "1 bon tam",
+                "dien thoai",
+                "quay bep  + minibar"
+            ]
+        ],
+        [
+            "A103",
+            "maintaining",
+            "Phòng thườnng 1 giường",
+            "normal",
+            [
+                "1 giường",
+                " 1 tu lanh nho",
+                "1 bo ban ghe",
+                "1 may lanh",
+                "2 den"
+            ]
+        ]
+    ],
+    "dichVu": [
+        [
+            "DV001",
+            "Xông hơi",
+            250000
+        ],
+        [
+            "DV002",
+            "Massage",
+            500000
+        ],
+        [
+            "DV003",
+            "Tắm hồ bơi",
+            200000
+        ],
+        [
+            "DV004",
+            "Giặt ủi",
+            50000
+        ],
+        [
+            "DV005",
+            "Ăn sáng",
+            500000
+        ],
+        [
+            "DV006",
+            "Ăn trưa",
+            250000
+        ],
+        [
+            "DV007",
+            "Ăn tối",
+            250000
         ]
     ]
 }
