@@ -3,8 +3,10 @@ from tkinter import Label
 from tkinter import Canvas
 from tkinter import Button
 from tkinter import messagebox
-from tksheet import Sheet
 from tkinter import ttk
+from tkinter import Text
+
+from tksheet import Sheet
 from pynput import keyboard
 from PIL import ImageTk, Image
 import json
@@ -23,6 +25,7 @@ appIco = ''
 navWidth = appWidth/4
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
+tabSel = [True, False, False, False, False, False, False]
 
 def genNav():
     
@@ -383,14 +386,52 @@ def genNav():
     def showTbl():
         return
 
-    def temp1(e): toggleLbl1, genRight('phieuThue')
-    def temp2(e): toggleLbl1, genRight('phieuThanhToan')
-    def temp3(e): toggleLbl1, genRight('phong')
-    def temp4(e): toggleLbl1, genRight('nhanVien')
-    def temp5(e): toggleLbl1, genRight('khachHang')
-    def temp6(e): toggleLbl1, genRight('dichVu')
-    def temp7(e): toggleLbl1, genRight('pNhapTbiAndFood')
-    def temp8(e): toggleLbl1, genRight('nhanVien')
+    def temp1(e):
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[0] = True, toggleLbl1
+        genRight('phieuThue', False), genBotBut('phieuThue')
+    def temp2(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[1] = True, toggleLbl2
+        genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
+    def temp3(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[2] = True
+        toggleLbl3
+        genRight('phong', False), genBotBut('phong')
+    def temp4(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[3] = True
+        toggleLbl4
+        genRight('nhanVien', False), genBotBut('nhanVien')
+    def temp5(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[4] = True
+        toggleLbl5
+        genRight('khachHang', False), genBotBut('khachHang')
+    def temp6(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[5] = True
+        toggleLbl6
+        genRight('dichVu', False), genBotBut('dichVu')
+    def temp7(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[6] = True
+        toggleLbl7
+        genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
+    def temp8(e): 
+        global tabSel
+        tabSel = [False] * 7
+        tabSel[7] = True
+        toggleLbl8
+        genRight('nhanVien', False), genBotBut('phieuThanhToan')
 
     def onclickEffectAndGuide():
         lbl1.bind("<Button-1>", temp1)
@@ -526,7 +567,7 @@ def genTopBanner():
     lblTopImg = Label(dashbrd, image = topimg)
     lblTopImg.place(x = 0, y = 0, relx = .25, rely = .25)
 
-def genRight(s):
+def genRight(s, includeSearch):
     
     dataNv = [
         ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', None, None],
@@ -564,11 +605,13 @@ def genRight(s):
         ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
     ]
     dataPhieuThue = [
-        ['PTP0001', ['KH001'], 'M001', {'DV001':2, 'DV002':1}, '20/10/2021', '20/12/2021', False, '', 0, 0, 0]
+        ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, '', 0, 0, 0],
+        ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, '', 0, 0, 0]
     ]
-    dataPhieuTT = [
-        ['PTT0001', ['KH001'], 'M001', '<tên nv Auto điền>', 12, 0, .15, 0, '<ngày in auto đi>']
-    ]
+    dataPhieuTT = []
+    # dataPhieuTT = [
+    #     ['PTT0001', 'KH001', 'M001', '<tên nv Auto điền>', 12, 0, .15, 0, '27/12/2020']
+    # ]
     phieuNhapTbAndFood = [
         ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
         ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
@@ -588,13 +631,13 @@ def genRight(s):
         ['DV007', 'Ăn tối', 250000]
     ]
     dataPh = [
-        ['A101', 'available', 'Phòng thường 1 giường','normal', ['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
-        ['A102', 'available', 'Phòng thường 2 giường','normal', ['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
-        ['B202', 'available', 'Phòng cao cấp 1 giường','elite', ['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']],
-        ['B201', 'available', 'Phòng thường 2 giường','elite', ['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']],
-        ['C301', 'available', 'Phòng thượng hạng 1 giường','vip', ['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']],
-        ['C303', 'occupied', 'Phòng thượng hạng 2 giường','vip', ['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']],
-        ['A103', 'maintaining', 'Phòng thườnng 1 giường','normal', ['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']],
+        ['A101', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+        ['A102', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
+        ['B202', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['B201', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['C301', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['C303', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['A103', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
     ]
     dct = {
         'nhanVien': dataNv,
@@ -614,15 +657,25 @@ def genRight(s):
     
     # print(json.dumps(dataRead['khachHang'], ensure_ascii=False, indent = 4))
     dataTbl = json.dumps(dataRead[s], ensure_ascii=False)
-    dataTblList = json.loads(dataTbl)
+    global dataTblList
+    if (not includeSearch):
+        dataTblList = json.loads(dataTbl)
 
+    global nvHeader
     nvHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
+    global khHeader
     khHeader = ['ID', 'Họ', 'Tên', 'Giới tính', 'Năm sinh', 'Địa chỉ', 'Số CMND/CDDD', 'Quốc tịch', 'Số điện thoại', 'Email']
+    global ptpHeader
     ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Ghi chú", "Tiền thuê", "Phí dịch vụ", "Tổng tiền"]
+    global pttHeader
     pttHeader = ['ID Phiếu', 'ID dịch vụ', 'ID nhân viên', 'Tên nhân viên', 'Số ngày ở', 'Tổng tiền', 'VAT', 'Tiền phải trả', 'Ngày in' ]
+    global pnHeader
     pnHeader = ['ID phiếu', 'ID Hàng hóa', 'Tên hàng hóa', 'Số lượng', 'ID nhà cung cấp', 'Tên nhà cung cấp', 'ID nhân viên', 'Phí vận chuyển', 'Ngày nhập']
+    global phongHeader
     phongHeader = ['ID', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
+    global dvHeader
     dvHeader = ['ID', 'Tên dịch vụ', 'Chi phí']
+    global toRenderHeader
     toRenderHeader = []
     if (s == 'nhanVien'):
         toRenderHeader = nvHeader
@@ -638,8 +691,8 @@ def genRight(s):
             isFound = False
             for r2 in tmpnvTbl:
                 if (r2[0] == r1[2]):
-                    print(r1)
-                    print(r2)
+                    # print(r1)
+                    # print(r2)
                     r1[3] = r2[1] + r2[2]
                     isFound = True
             if (not isFound):
@@ -665,7 +718,14 @@ def genRight(s):
     rSh.enable_bindings('all')
     rSh.place(x=340, y=200)
 
-def genBotBut():
+
+def genBotBut(strTable):
+    with open('./json/data.json', 'r', encoding='utf-8') as fo:
+        dataRead = json.loads(fo.read())
+    dataTbl4GenRight = json.dumps(dataRead[strTable], ensure_ascii=False)
+    dataTblList4GenRight = json.loads(dataTbl4GenRight)
+    # print(dataTblList4GenRight[0][0])
+
     botBut = Button(
         dashbrd,
         font = ('Chirp', 14),
@@ -673,29 +733,168 @@ def genBotBut():
         bg = 'white',
         border = '1px solid black',
         height = 1,
-        width = 10
+        width = 7
     )
+    global icoAdd
+    rawIcoAdd = Image.open('./img/add.png')
+    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
     addBut1 = Button(
         dashbrd,
+        image = icoAdd,
         font = ('Chirp', 14),
-        text = 'Add +',
         bg = 'white',
         border = '1px solid black',
-        height = 1,
-        width = 10
     )
     sortBut1 = ttk.Combobox(
         dashbrd,
         font = ('Chirp', 14),
-        values = ['1', '2', '3', '4'],
-        text = 'Filter',
+        values = ['Tăng dần', 'Giảm dần'],
         width = 10,
-        cursor = 'hand2'
+        cursor = 'hand2')
+    sortBut1.set('--Thứ tự--')
+
+    srhBox2 = Text(
+        height = 1,
+        cursor = 'xterm',
+        font = ('Chirp', 10),
+        width = 20,
+        border = '2px solid black'
     )
+
+    def handleNormSearch():
+        inp = srhBox1.get("1.0",'end-1c')
+        # https://stackoverflow.com/questions/63525858/typeerror-get-missing-1-required-positional-argument-index1
+        tmp = []
+        for item in dataTblList4GenRight:
+            for jtem in item:
+                if (str(jtem).upper().find(inp.upper()) != -1):
+                    tmp.append(item)
+                    break
+        global dataTblList
+        dataTblList = tmp
+        genRight(strTable, True)
+        return
+    global icoSearch
+    rawIcoSearch = Image.open('./img/sIco.png')
+    rawIcoSearch = rawIcoSearch.resize((20, 20), Image.Resampling.LANCZOS)
+    icoSearch = ImageTk.PhotoImage(rawIcoSearch)
+    lblSrh = Button(dashbrd, image = icoSearch,font = ('Chirp', 14),bg = 'white', command = handleNormSearch)
+    srhBox1 = Text(
+        height = 1,
+        cursor = 'xterm',
+        font = ('Chirp', 10),
+        width = 20,
+        border = '2px solid black'
+    )
+    
+
+    # Tìm kiếm Nâng cao - Advanced Searching
+    toRenderHeader1 = toRenderHeader
+    global toRenderHeader2
+    global toRenderHeader3
+    global toRenderHeader4
+    toRenderHeader2 = []
+    toRenderHeader3 = []
+    toRenderHeader4 = []
+    sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao')
+    sAdTextLbl2 = Label(dashbrd, text = 'Từ')
+    sAdTextLbl3 = Label(dashbrd, text = 'Đến')
+    sAdLbl1 = ttk.Combobox(
+        dashbrd,
+        values = list(toRenderHeader1), 
+        width = 10
+    )
+    sAdLbl1.set('--Chọn 1--')
+    
+    sAdLbl2 = ttk.Combobox(
+        dashbrd,
+        values = list(toRenderHeader2),
+        width = 10
+    )
+    sAdLbl2.set('--Chọn 2--')
+
+    sAdLbl3 = Text(
+        dashbrd,
+        font = ('Chirp', 10),
+        width = 10,
+        height = 1
+    )
+    # sAdLbl3.set('--Chọn 3--')
+
+    sAdLbl4 = Text(
+        dashbrd,
+        font = ('Chirp', 10),
+        width = 10,
+        height = 1
+    )
+    # sAdLbl4.set('--Chọn 4--')
+
+    
+
+    
+
+    # binding 
+    def tmp1(e): 
+        global toRenderHeader2
+        toRenderHeader2 = []
+        usrSel1 = e.widget.get()
+        sAdLbl1.set(e.widget.get())
+        if (tabSel[0] and usrSel1 in ptpHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[ptpHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[1] and usrSel1 in pttHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[pttHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[2] and usrSel1 in phongHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[phongHeader.index(usrSel1)])
+            toRenderHeader2 = list(dict.fromkeys(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[3] and usrSel1 in nvHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[nvHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[4] and usrSel1 in khHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[khHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[5] and usrSel1 in dvHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[dvHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+        if (tabSel[5] and usrSel1 in pnHeader):
+            for item in dataTblList4GenRight:
+                toRenderHeader2.append(item[pnHeader.index(usrSel1)])
+            toRenderHeader2 = list(set(toRenderHeader2))
+            sAdLbl2['values'] = toRenderHeader2
+    def tmp2(e): 
+        print(e.widget.get())
+        sAdLbl2.set(e.widget.get())
+    sAdLbl1.bind("<<ComboboxSelected>>", tmp1)
+    sAdLbl2.bind("<<ComboboxSelected>>", tmp2)
+    # end binding
+
     botBut.place(x=800, y=630)
-    addBut1.place(x=800, y=130)
-    sortBut1.place(x=850, y=200)
-    return
+    addBut1.place(x=340, y=130)
+    sortBut1.place(x=700, y=130)
+    lblSrh.place(x=590, y=130)
+    srhBox1.place(x=435, y=135)
+    srhBox2.place(x=460, y=170)
+    sAdTextLbl1.place(x=340, y=170)
+    sAdTextLbl2.place(x=340, y=170)
+    sAdTextLbl3.place(x=340, y=170)
+    sAdLbl1.place(x=620, y =170)
+    sAdLbl2.place(x=750, y =170)
+    sAdLbl3.place(x=750+130, y =170)
+    sAdLbl4.place(x=750+260, y =170)
 
 
 
@@ -705,8 +904,9 @@ dashbrd = Tk()
 genDashUI()
 genNav()
 # genTopBanner()
-genRight('nhanVien')
-genBotBut()
+genRight('phieuThue', False)
+# toRenderHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
+genBotBut('phieuThue')
 dashbrd.mainloop()
 winClosed = True
 # listener.join()
