@@ -366,216 +366,190 @@
     "phieuThue": [
         [
             "PTP0001",
-            [
-                "KH001"
-            ],
+            "KH001",
             "M001",
-            {
-                "DV001": 2,
-                "DV002": 1
-            },
+            "DV001",
             "20/10/2021",
-            "20/12/2021",
+            "31/12/2021",
             false,
-            "",
-            0,
-            0,
-            0
+            500000,
+            250000,
+            750000,
+            "A101"
+        ],
+        [
+            "PTP0002",
+            "KH002",
+            "M001",
+            "DV002",
+            "08/01/2021",
+            "17/02/2022",
+            false,
+            800000,
+            500000,
+            1300000,
+            "A102"
         ]
     ],
     "phieuThanhToan": [
         [
             "PTT0001",
-            [
-                "KH001"
-            ],
+            "DV001",
             "M001",
-            "<tên nv Auto điền>",
-            12,
-            0,
-            0.15,
-            0,
-            "<ngày in auto đi>"
+            "Phạm Quốc  Khải",
+            72,
+            "750000",
+            ".15",
+            "862500.0",
+            "2022-05-02"
+        ],
+        [
+            "PTT0002",
+            "DV002",
+            "M001",
+            "Phạm Quốc  Khải",
+            405,
+            "1300000",
+            ".15",
+            "1495000.0",
+            "2022-05-02"
         ]
     ],
     "pNhapTbiAndFood": [
         [
             "P001",
-            "H001Coca-cola lon",
+            "H001",
+            "Coca-cola lon",
             "1000",
             "NCC001",
-            "",
+            "Nhà cung cấp 1",
             "NV01",
             500000,
-            "10/3/2022",
-            ""
+            "10/3/2022"
         ],
         [
             "P002",
-            "H002Pepsi lon",
+            "H002",
+            "Pepsi lon",
             "1000",
             "NCC002",
-            "",
+            "Nhà cung cấp 2",
             "NV01",
             500000,
-            "11/3/2022",
-            ""
+            "11/3/2022"
         ],
         [
             "P003",
-            "H003Bia Sài Gòn",
+            "H003",
+            "Bia Sài Gòn",
             "1000",
             "NCC003",
-            "",
+            "Nhà cung cấp 3",
             "NV01",
             500000,
-            "12/3/2022",
-            ""
+            "12/3/2022"
         ],
         [
             "P004",
-            "H004Trái cây",
+            "H004",
+            "Trái cây",
             "20",
             "NCC004",
-            "",
+            "Nhà cung cấp 4",
             "NV01",
             100000,
-            "14/3/2022",
-            ""
+            "14/3/2022"
         ],
         [
             "P005",
-            "H005Khăn lạnh",
+            "H005",
+            "Khăn lạnh",
             "1000",
             "NCC005",
-            "",
+            "Nhà cung cấp 5",
             "NV01",
             100000,
-            "19/3/2022",
-            ""
+            "19/3/2022"
         ],
         [
             "P006",
-            "H006Thực phẩm",
+            "H006",
+            "Thực phẩm",
             "20",
             "NCC006",
-            "",
+            "Nhà cung cấp 6",
             "NV02",
             200000,
-            "21/3/2022",
-            ""
+            "21/3/2022"
         ],
         [
             "P007",
-            "H007Pepsi lon",
+            "H007",
+            "Pepsi lon",
             "1000",
             "NCC002",
-            "",
+            "Nhà cung cấp 7",
             "NV01",
             500000,
-            "25/3/2022",
-            ""
+            "25/3/2022"
         ]
     ],
     "phong": [
         [
             "A101",
+            "500000",
             "available",
             "Phòng thường 1 giường",
             "normal",
-            [
-                "1 giường",
-                " 1 tu lanh nho",
-                "1 bo ban ghe",
-                "1 may lanh",
-                "2 den"
-            ]
+            "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"
         ],
         [
             "A102",
+            "800000",
             "available",
             "Phòng thường 2 giường",
             "normal",
-            [
-                "2 giường",
-                "1 tu lanh nho",
-                "1 bo ban ghe",
-                "1 may lanh",
-                "2 den"
-            ]
+            "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"
         ],
         [
             "B202",
+            "1000000",
             "available",
             "Phòng cao cấp 1 giường",
             "elite",
-            [
-                "1 giường",
-                "1 tu lanh lon",
-                "2 bo ban ghe ",
-                "1 may lanh",
-                "4 den",
-                "1 bon tam"
-            ]
+            "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"
         ],
         [
             "B201",
+            "1200000",
             "available",
             "Phòng thường 2 giường",
             "elite",
-            [
-                "2 giường",
-                "1 tu lanh lon",
-                "2 bo ban ghe ",
-                "1 may lanh",
-                "4 den",
-                "1 bon tam"
-            ]
+            "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"
         ],
         [
             "C301",
+            "3000000",
             "available",
             "Phòng thượng hạng 1 giường",
             "vip",
-            [
-                "1 giường",
-                "1 tu lanh lon",
-                "3 bo ban ghe ",
-                "2 may lanh",
-                "6 den",
-                "1 bon tam",
-                "dien thoai",
-                "quay bep  + minibar"
-            ]
+            "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"
         ],
         [
             "C303",
+            "3200000",
             "occupied",
             "Phòng thượng hạng 2 giường",
             "vip",
-            [
-                "2 giường",
-                "1 tu lanh lon",
-                "3 bo ban ghe ",
-                "2 may lanh",
-                "6 den",
-                "1 bon tam",
-                "dien thoai",
-                "quay bep  + minibar"
-            ]
+            "['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"
         ],
         [
             "A103",
+            "600000",
             "maintaining",
             "Phòng thườnng 1 giường",
             "normal",
-            [
-                "1 giường",
-                " 1 tu lanh nho",
-                "1 bo ban ghe",
-                "1 may lanh",
-                "2 den"
-            ]
+            "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"
         ]
     ],
     "dichVu": [
