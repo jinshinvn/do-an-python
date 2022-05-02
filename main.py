@@ -1,10 +1,14 @@
 from tkinter import Tk
+from tkinter import StringVar
 from tkinter import Label
 from tkinter import Canvas
 from tkinter import Button
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter import Text
+from fpdf import FPDF
+from datetime import date
+from matplotlib.colors import to_rgba_array
 
 from tksheet import Sheet
 from pynput import keyboard
@@ -431,7 +435,7 @@ def genNav():
         tabSel = [False] * 7
         tabSel[7] = True
         toggleLbl8
-        genRight('nhanVien', False), genBotBut('phieuThanhToan')
+        genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
 
     def onclickEffectAndGuide():
         lbl1.bind("<Button-1>", temp1)
@@ -569,6 +573,28 @@ def genTopBanner():
 
 def genRight(s, includeSearch):
     
+    global dvHeader
+    dvHeader = ['ID', 'Tên dịch vụ', 'Chi phí']
+    dataDv = [
+        ['DV001', 'Xông hơi', 250000],
+        ['DV002', 'Massage', 500000],
+        ['DV003', 'Tắm hồ bơi', 200000],
+        ['DV004', 'Giặt ủi', 50000],
+        ['DV005', 'Ăn sáng', 500000],
+        ['DV006', 'Ăn trưa', 250000],
+        ['DV007', 'Ăn tối', 250000]
+    ]
+    global phongHeader
+    phongHeader = ['ID', 'Giá phòng', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
+    dataPh = [
+        ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+        ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
+        ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+    ]
     dataNv = [
         ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', None, None],
         ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị', None, None],
@@ -604,14 +630,58 @@ def genRight(s, includeSearch):
         ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
         ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
     ]
+    global ptpHeader
+    ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Tiền thuê", "Phí dịch vụ", "Tổng tiền", "ID Phòng"]
     dataPhieuThue = [
-        ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, '', 0, 0, 0],
-        ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, '', 0, 0, 0]
+        ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, 0, 0, 0, 'A101'],
+        ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, 0, 0, 0, 'A102']
     ]
+    global pttHeader
+    pttHeader = ['ID Phiếu', 'ID dịch vụ', 'ID nhân viên', 'Tên nhân viên', 'Số ngày ở', 'Tổng tiền', 'VAT', 'Tiền phải trả', 'Ngày in' ]
     dataPhieuTT = []
-    # dataPhieuTT = [
-    #     ['PTT0001', 'KH001', 'M001', '<tên nv Auto điền>', 12, 0, .15, 0, '27/12/2020']
-    # ]
+    for row in dataPhieuThue:
+        index = dataPhieuThue.index(row)
+        tmp = []
+        tmp.append('PTT' + row[0][3:])
+        tmp.append(row[3])
+        tmp.append(row[2])
+        for item in dataNv:
+            if (item[0] == row[2]):
+                tmp.append(item[1]+ ' ' +item[2])
+                break
+        
+        d0 = date(int(row[4][6:10]), int(row[4][3:5]), int(row[4][0:2]))
+        d1 = date(int(row[5][6:10]), int(row[5][3:5]), int(row[5][0:2]))
+        delta = d1 - d0
+        tmp.append(delta.days)
+
+        rentFee = 0
+        if (row[10] != ''):
+            for row1 in dataPh: 
+                if (row1[0] == row[10]):
+                    rentFee = int(row1[1])
+                    break
+        serviceFee = 0 
+        if (row[3] != ''):
+            for row2 in dataDv:
+                if (row2[0] == row[3]):
+                    serviceFee = int(row2[2])
+        tmp.append(str(rentFee+serviceFee))
+        tmp.append('.15')
+        tmp.append(
+            str(
+                round((rentFee+serviceFee)*1.15, 1)
+            )
+        )
+        tmp.append(str(date.today().isoformat()))
+
+        dataPhieuThue[index][7] = rentFee
+        dataPhieuThue[index][8] = serviceFee
+        dataPhieuThue[index][9] = rentFee + serviceFee
+
+        dataPhieuTT.append(tmp)
+        
+    
     phieuNhapTbAndFood = [
         ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
         ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
@@ -621,24 +691,7 @@ def genRight(s, includeSearch):
         ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
         ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
     ]
-    dataDv = [
-        ['DV001', 'Xông hơi', 250000],
-        ['DV002', 'Massage', 500000],
-        ['DV003', 'Tắm hồ bơi', 200000],
-        ['DV004', 'Giặt ủi', 50000],
-        ['DV005', 'Ăn sáng', 500000],
-        ['DV006', 'Ăn trưa', 250000],
-        ['DV007', 'Ăn tối', 250000]
-    ]
-    dataPh = [
-        ['A101', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-        ['A102', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
-        ['B202', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['B201', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['C301', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['C303', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['A103', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-    ]
+    
     dct = {
         'nhanVien': dataNv,
         'khachHang': dataKh,
@@ -665,16 +718,12 @@ def genRight(s, includeSearch):
     nvHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
     global khHeader
     khHeader = ['ID', 'Họ', 'Tên', 'Giới tính', 'Năm sinh', 'Địa chỉ', 'Số CMND/CDDD', 'Quốc tịch', 'Số điện thoại', 'Email']
-    global ptpHeader
-    ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Ghi chú", "Tiền thuê", "Phí dịch vụ", "Tổng tiền"]
-    global pttHeader
-    pttHeader = ['ID Phiếu', 'ID dịch vụ', 'ID nhân viên', 'Tên nhân viên', 'Số ngày ở', 'Tổng tiền', 'VAT', 'Tiền phải trả', 'Ngày in' ]
+    
+    
     global pnHeader
     pnHeader = ['ID phiếu', 'ID Hàng hóa', 'Tên hàng hóa', 'Số lượng', 'ID nhà cung cấp', 'Tên nhà cung cấp', 'ID nhân viên', 'Phí vận chuyển', 'Ngày nhập']
-    global phongHeader
-    phongHeader = ['ID', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
-    global dvHeader
-    dvHeader = ['ID', 'Tên dịch vụ', 'Chi phí']
+    
+    
     global toRenderHeader
     toRenderHeader = []
     if (s == 'nhanVien'):
@@ -719,6 +768,7 @@ def genRight(s, includeSearch):
     rSh.place(x=340, y=200)
 
 
+
 def genBotBut(strTable):
     with open('./json/data.json', 'r', encoding='utf-8') as fo:
         dataRead = json.loads(fo.read())
@@ -726,7 +776,7 @@ def genBotBut(strTable):
     dataTblList4GenRight = json.loads(dataTbl4GenRight)
     # print(dataTblList4GenRight[0][0])
 
-    botBut = Button(
+    saveBotBut = Button(
         dashbrd,
         font = ('Chirp', 14),
         text = 'Save ',
@@ -734,6 +784,75 @@ def genBotBut(strTable):
         border = '1px solid black',
         height = 1,
         width = 7
+    )
+    def printSelectedRow():
+        data2Print = []
+        a = rSh.get_currently_selected(get_coords = False, return_nones_if_not = False)
+        try:
+            if (a[0] == 'row'):
+                data2Print = dataTblList[a[1]]
+            else:
+                data2Print = dataTblList[a[0]]
+        except (IndexError):
+            messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng chọn hàng cần xuất.')
+
+        pdf = FPDF()
+        pdf.alias_nb_pages()
+        pdf.add_page()
+        pdf.add_font("NotoSans", style="", fname="NotoSans-Regular.ttf", uni=True)
+        pdf.add_font("NotoSans", style="B", fname="NotoSans-Bold.ttf", uni=True)
+        pdf.add_font("NotoSans", style="I", fname="NotoSans-Italic.ttf", uni=True)
+        pdf.add_font("NotoSans", style="BI", fname="NotoSans-BoldItalic.ttf", uni=True)
+        
+        pdf.set_font("NotoSans", style="B", size=12)
+        pdf.cell(0, 15, 'KHÁCH SẠN GRAND HOTEL', 0, 1, 'C')
+        pdf.set_font("NotoSans", style="", size=12)
+        #image
+        pdf.cell(0, 10, '84/176 Phan Văn Trị, P.2, Q.5, TP.HCM', 0, 1, 'C')
+        pdf.cell(0, 10, 'ĐT: 0828.049.514 - 0123.456.789', 0, 1, 'C')
+        pdf.set_font("NotoSans", style="B", size=12)
+        pdf.cell(0, 15, 'BIÊN LAI KHÁCH HÀNG', 0, 1, 'C')
+        pdf.set_font("NotoSans", style="", size=12)
+        pdf.ln(5)
+        pdf.set_left_margin(40)
+        pdf.cell(100, 10, 'Ngày in: ', 'L')
+        pdf.cell(100, 10, 'Số:', 'R')
+        pdf.ln(5)
+        pdf.cell(100, 10, 'Thu ngân:', 'L')
+        pdf.cell(100, 10, 'In lúc:', 'R')
+        pdf.ln(5)
+        pdf.cell(100, 10, 'Ngày ở:', 'L')
+        pdf.cell(100, 10, 'Ngày đi:', 'R')
+        pdf.ln(10)
+
+        pdf.set_left_margin(40)
+        for i in range(0, len(pttHeader)-3):
+            if (pttHeader[i] != 'ID nhân viên' and pttHeader[i] != 'Tên nhân viên'):
+                pdf.cell(28, 10, str(pttHeader[i]), border=1)
+        pdf.ln(10)
+        for item in data2Print:
+            pdf.cell(28, 10, str(item), border=1)
+        pdf.ln(10)
+
+        pdf.set_left_margin(100)
+        pdf.set_font("NotoSans", style="BI", size=12)
+        pdf.cell(0, 10, 'Thuế VAT:', 'L')
+        pdf.ln(10)
+        pdf.cell(0, 10, 'Tổng tiền:', 'L')
+        pdf.ln(10)
+
+        
+        pdf.output('output.pdf', 'F')
+       
+    exportBotBut = Button(
+        dashbrd,
+        font = ('Chirp', 14),
+        text = 'Export to PDF',
+        bg = 'white',
+        border = '1px solid black',
+        height = 1,
+        width = 10,
+        command = printSelectedRow
     )
     global icoAdd
     rawIcoAdd = Image.open('./img/add.png')
@@ -762,24 +881,8 @@ def genBotBut(strTable):
         border = '2px solid black'
     )
 
-    def handleNormSearch():
-        inp = srhBox1.get("1.0",'end-1c')
-        # https://stackoverflow.com/questions/63525858/typeerror-get-missing-1-required-positional-argument-index1
-        tmp = []
-        for item in dataTblList4GenRight:
-            for jtem in item:
-                if (str(jtem).upper().find(inp.upper()) != -1):
-                    tmp.append(item)
-                    break
-        global dataTblList
-        dataTblList = tmp
-        genRight(strTable, True)
-        return
-    global icoSearch
-    rawIcoSearch = Image.open('./img/sIco.png')
-    rawIcoSearch = rawIcoSearch.resize((20, 20), Image.Resampling.LANCZOS)
-    icoSearch = ImageTk.PhotoImage(rawIcoSearch)
-    lblSrh = Button(dashbrd, image = icoSearch,font = ('Chirp', 14),bg = 'white', command = handleNormSearch)
+    
+
     srhBox1 = Text(
         height = 1,
         cursor = 'xterm',
@@ -787,7 +890,6 @@ def genBotBut(strTable):
         width = 20,
         border = '2px solid black'
     )
-    
 
     # Tìm kiếm Nâng cao - Advanced Searching
     toRenderHeader1 = toRenderHeader
@@ -800,17 +902,24 @@ def genBotBut(strTable):
     sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao')
     sAdTextLbl2 = Label(dashbrd, text = 'Từ')
     sAdTextLbl3 = Label(dashbrd, text = 'Đến')
+
+    selected1 = StringVar()
+
     sAdLbl1 = ttk.Combobox(
         dashbrd,
         values = list(toRenderHeader1), 
-        width = 10
+        width = 10,
+        textvariable= selected1
     )
     sAdLbl1.set('--Chọn 1--')
+
+    selected2 = StringVar()
     
     sAdLbl2 = ttk.Combobox(
         dashbrd,
         values = list(toRenderHeader2),
-        width = 10
+        width = 10,
+        textvariable= selected2
     )
     sAdLbl2.set('--Chọn 2--')
 
@@ -820,7 +929,6 @@ def genBotBut(strTable):
         width = 10,
         height = 1
     )
-    # sAdLbl3.set('--Chọn 3--')
 
     sAdLbl4 = Text(
         dashbrd,
@@ -828,11 +936,68 @@ def genBotBut(strTable):
         width = 10,
         height = 1
     )
-    # sAdLbl4.set('--Chọn 4--')
-
     
+    def handleNormSearch(e):
+        inp = srhBox1.get("1.0",'end-1c')
+        # https://stackoverflow.com/questions/63525858/typeerror-get-missing-1-required-positional-argument-index1
+        tmp = []
+        for item in dataTblList4GenRight:
+            for jtem in item:
+                if (str(jtem).upper().find(inp.upper()) != -1):
+                    tmp.append(item)
+                    break
+        global dataTblList
+        dataTblList = tmp
+        genRight(strTable, True)
+        return
+    def handleAdvancedSearch():
+        # Link code: https://www.pythontutorial.net/tkinter/tkinter-combobox/
+        tmp = []
+        try:
+            index = toRenderHeader1.index(selected1.get())
+        except ValueError:
+            messagebox.showwarning(title='Cảnh báo', message='Vui lòng chọn tiêu chí')
+        # print(index)
+        # print(dataTblList4GenRight[3])
+        # print(dataTblList4GenRight[3][index])
 
+        if (strTable == 'nhanVien'):
+            stweird = 3
+        else:
+            stweird = 0
+        if (not str(dataTblList4GenRight[stweird][index]).isnumeric()):
+            messagebox.showwarning(title='Lỗi', message='Dữ liệu không phải số.')
+            return
+        x = sAdLbl3.get("1.0",'end-1c')
+        y = sAdLbl4.get("1.0",'end-1c')
+        if (x != '' and y != ''):
+            if (x == ''): x = 0
+            if (y == ''): y = 0
+            x = int(x)
+            y = int(y)
+            if (x > y):
+                messagebox.showwarning(title='Lỗi', message='Điểm dưới nhỏ hơn điểm trên.')
+            else:
+                tmp = []
+                for row in dataTblList4GenRight:
+                    if ((int(row[index] or 0) > x) and (int(row[index] or 0) < y) ):
+                        # https://stackoverflow.com/questions/3930188/how-to-convert-nonetype-to-int-or-string
+                        tmp.append(row)
+                global dataTblList
+                oldDataHehe = dataTblList
+                dataTblList = tmp
+                genRight(strTable, True)
+                dataTblList = oldDataHehe
+        else:
+            messagebox.showwarning(title='Lỗi', message='Bạn chưa nhập khoảng cần tìm.')
+        return
     
+    global icoSearch
+    rawIcoSearch = Image.open('./img/sIco.png')
+    rawIcoSearch = rawIcoSearch.resize((20, 20), Image.Resampling.LANCZOS)
+    icoSearch = ImageTk.PhotoImage(rawIcoSearch)
+    lblSrh1 = Button(dashbrd, image = icoSearch, font = ('Chirp', 14),bg = 'white', command = handleNormSearch)
+    lblSrh2 = Button(dashbrd, image = icoSearch, font = ('Chirp', 14),bg = 'white', command = handleAdvancedSearch)
 
     # binding 
     def tmp1(e): 
@@ -876,25 +1041,41 @@ def genBotBut(strTable):
             toRenderHeader2 = list(set(toRenderHeader2))
             sAdLbl2['values'] = toRenderHeader2
     def tmp2(e): 
-        print(e.widget.get())
         sAdLbl2.set(e.widget.get())
+        sample = e.widget.get()
+        index = toRenderHeader1.index(selected1.get())
+        tmp = []
+        global dataTblList
+        for row in dataTblList:
+            if (sample == row[index]):
+                tmp.append(row)
+            elif (int(sample) == row[index]):
+                tmp.append(row)
+        print(tmp)
+        oldDataHehe = dataTblList
+        dataTblList = tmp
+        genRight(strTable, True)
+        dataTblList = oldDataHehe
+
     sAdLbl1.bind("<<ComboboxSelected>>", tmp1)
     sAdLbl2.bind("<<ComboboxSelected>>", tmp2)
     # end binding
 
-    botBut.place(x=800, y=630)
+    saveBotBut.place(x=800, y=630)
+    exportBotBut.place(x=900, y=630)
     addBut1.place(x=340, y=130)
     sortBut1.place(x=700, y=130)
-    lblSrh.place(x=590, y=130)
+    lblSrh1.place(x=585, y=130)
+    lblSrh2.place(x=1095, y= 165)
     srhBox1.place(x=435, y=135)
-    srhBox2.place(x=460, y=170)
+    # srhBox2.place(x=460, y=170)
     sAdTextLbl1.place(x=340, y=170)
-    sAdTextLbl2.place(x=340, y=170)
-    sAdTextLbl3.place(x=340, y=170)
-    sAdLbl1.place(x=620, y =170)
-    sAdLbl2.place(x=750, y =170)
-    sAdLbl3.place(x=750+130, y =170)
-    sAdLbl4.place(x=750+260, y =170)
+    sAdTextLbl2.place(x=845, y=170)
+    sAdTextLbl3.place(x=975, y=170)
+    sAdLbl1.place(x=615, y =170)
+    sAdLbl2.place(x=745, y =170)
+    sAdLbl3.place(x=745+130, y =170)
+    sAdLbl4.place(x=745+260, y =170)
 
 
 
