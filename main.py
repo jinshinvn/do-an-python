@@ -26,6 +26,9 @@ import json
 import threading
 import time
 
+# genRight if includeSearch = False: load data from local json
+# genRight if includeSearch = True: don't load data from local json
+
 isSaved = True
 cfg_radius = 60
 cfg_clr = 'white'
@@ -40,6 +43,24 @@ heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 tabSel = [True, False, False, False, False, False, False]
 
+phieuNhapTbAndFood = [
+    ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
+    ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
+    ['P003','H003', 'Bia Sài Gòn', '1000', 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/3/2022'],
+    ['P004','H004', 'Trái cây', '20', 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/3/2022'],
+    ['P005','H005', 'Khăn lạnh', '1000', 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/3/2022'],
+    ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
+    ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
+]
+dataDv = [
+    ['DV001', 'Xông hơi', 250000],
+    ['DV002', 'Massage', 500000],
+    ['DV003', 'Tắm hồ bơi', 200000],
+    ['DV004', 'Giặt ủi', 50000],
+    ['DV005', 'Ăn sáng', 500000],
+    ['DV006', 'Ăn trưa', 250000],
+    ['DV007', 'Ăn tối', 250000]
+]
 dataPhieuThue = [
     ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, 0, 0, 0, 'A101'],
     ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, 0, 0, 0, 'A102']
@@ -70,15 +91,24 @@ dataNv = [
     ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
 ]
 dataPh = [
-        ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-        ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
-        ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-    ]
-    
+    ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+    ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
+    ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+    ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+    ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+    ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+    ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+]
+dataKh = [
+    ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
+    ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
+    ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
+    ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
+    ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
+    ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
+    ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
+]
+
 def genNav():
     
     lftNavDiv = Canvas(
@@ -440,7 +470,7 @@ def genNav():
 
     def renderInpNhanVien(e):
         inpNv = Toplevel(dashbrd)
-        inpNv.title('Nhân viên')
+        inpNv.title(' Thông tin nhân viên')
         inpNv.geometry('700x800')
         lbl1 = Label(inpNv, font = ('Chirp', 10), text = 'ID:')
         lbl2 = Label(inpNv, font = ('Chirp', 10), text = 'Họ')
@@ -514,15 +544,11 @@ def genNav():
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             quitjob()
             genRight('nhanVien', True)
-            return
-        def quitjob():
-            inpNv.destroy()
-            return
+        def quitjob(): inpNv.destroy()
         but1 = Button(inpNv, text='Save', font = ('Chirp', 11), command =  addData)
         but2 = Button(inpNv, text='Cancel', font = ('Chirp', 11), command = quitjob)
         but1.place(x=120, y= 10 + heightSpacing * 10)
         but2.place(x=240, y= 10 + heightSpacing * 10)
-        return
 
     def renderInpPhieuThue(e):
         inpPTP = Toplevel(dashbrd)
@@ -660,6 +686,165 @@ def genNav():
 
         return
 
+    def renderInpKh(e):
+        inpKh = Toplevel(dashbrd)
+        inpKh.title('Thông tin khách hàng')
+        inpKh.geometry('400x380')
+        lbl1 = Label(inpKh, font = ('Chirp', 10), text = 'ID')
+        lbl2 = Label(inpKh, font = ('Chirp', 10), text = 'Họ')
+        lbl3 = Label(inpKh, font = ('Chirp', 10), text = 'Tên')
+        lbl4 = Label(inpKh, font = ('Chirp', 10), text = 'Giới tính')
+        lbl5 = Label(inpKh, font = ('Chirp', 10), text = 'Năm sinh')
+        lbl6 = Label(inpKh, font = ('Chirp', 10), text = 'Địa chỉ')
+        
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+        lbl4.place(x = 10, y = 10 + heightSpacing * 3)
+        lbl5.place(x = 10, y = 10 + heightSpacing * 4)
+        lbl6.place(x = 10, y = 10 + heightSpacing * 5)
+        
+         
+        txt1 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+
+        var = StringVar()
+        gender = ttk.Combobox(inpKh, values = ['Nam', 'Nữ'])
+        txt5 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt6 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        
+
+        txt1.place(x = 100, y = 10 + heightSpacing * 0)
+        txt2.place(x = 100, y = 10 + heightSpacing * 1)
+        txt3.place(x = 100, y = 10 + heightSpacing * 2)
+        gender.place(x = 100, y = 10 + heightSpacing * 3)
+        txt5.place(x = 100, y = 10 + heightSpacing * 4)
+        txt6.place(x = 100, y = 10 + heightSpacing * 5)
+        
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            tmp.append(gender.get())
+            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(txt6.get("1.0",'end-1c'))
+            global dataKh
+            dataKh.append(tmp)
+            genRight('khachHang', True)
+        def quitjob(): inpKh.destroy()
+
+        but1 = Button(inpKh, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpKh, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 6)
+        but2.place(x=240, y= 10 + heightSpacing * 6)
+        return
+
+    def renderInpDv(e):
+        print('gone 2')
+        inpDv = Toplevel(dashbrd)
+        inpDv.title('Thông tin dịch vụ')
+        inpDv.geometry('400x380')
+        lbl1 = Label(inpDv, font = ('Chirp', 10), text = 'ID')
+        lbl2 = Label(inpDv, font = ('Chirp', 10), text = 'Tên dịch vụ')
+        lbl3 = Label(inpDv, font = ('Chirp', 10), text = 'Chi phí')
+
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+
+        txt1 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+
+        txt1.place(x = 100, y = 10 + heightSpacing * 0)
+        txt2.place(x = 100, y = 10 + heightSpacing * 1)
+        txt3.place(x = 100, y = 10 + heightSpacing * 2)
+
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            global dataDv
+            dataDv.append(tmp)
+            genRight('dichVu', True)
+        def quitjob(): inpDv.destroy()
+        but1 = Button(inpDv, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpDv, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 3)
+        but2.place(x=240, y= 10 + heightSpacing * 3)
+        return
+
+    def renderInpProduct(e):
+        inpPr = Toplevel(dashbrd)
+        inpPr.title(' Thông tin nhân viên')
+        inpPr.geometry('1000x900')
+        lbl1 = Label(inpPr, font = ('Chirp', 10), text = 'ID phiếu')
+        lbl2 = Label(inpPr, font = ('Chirp', 10), text = 'ID hàng hóa')
+        lbl3 = Label(inpPr, font = ('Chirp', 10), text = 'Tên hàng hóa')
+        lbl4 = Label(inpPr, font = ('Chirp', 10), text = 'Số lượng')
+        lbl5 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhà cung cấp')
+        lbl6 = Label(inpPr, font = ('Chirp', 10), text = 'Tên nhà cung cấp')
+        lbl7 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhân viên')
+        lbl8 = Label(inpPr, font = ('Chirp', 10), text = 'Phí vận chuyển')
+        lbl9 = Label(inpPr, font = ('Chirp', 10), text = 'Ngày nhập')
+
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+        lbl4.place(x = 10, y = 10 + heightSpacing * 3)
+        lbl5.place(x = 10, y = 10 + heightSpacing * 4)
+        lbl6.place(x = 10, y = 10 + heightSpacing * 5)
+        lbl7.place(x = 10, y = 10 + heightSpacing * 6)
+        lbl8.place(x = 10, y = 10 + heightSpacing * 7)
+        lbl9.place(x = 10, y = 10 + heightSpacing * 8)
+
+        txt1 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt4 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt5 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt6 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt7 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt8 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt9 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+
+        txt1.place(x = 125, y = 10 + heightSpacing * 0)
+        txt2.place(x = 125, y = 10 + heightSpacing * 1)
+        txt3.place(x = 125, y = 10 + heightSpacing * 2)
+        txt4.place(x = 125, y = 10 + heightSpacing * 3)
+        txt5.place(x = 125, y = 10 + heightSpacing * 4)
+        txt6.place(x = 125, y = 10 + heightSpacing * 5)
+        txt7.place(x = 125, y = 10 + heightSpacing * 6)
+        txt8.place(x = 125, y = 10 + heightSpacing * 7)
+        txt9.place(x = 125, y = 10 + heightSpacing * 8)
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            tmp.append(txt4.get("1.0",'end-1c'))
+            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(txt6.get("1.0",'end-1c'))
+            tmp.append(txt7.get("1.0",'end-1c'))
+            tmp.append(txt8.get("1.0",'end-1c'))
+            tmp.append(txt9.get("1.0",'end-1c'))
+            global phieuNhapTbAndFood
+            phieuNhapTbAndFood.append(tmp)
+            genRight('pNhapTbiAndFood', True)
+            return
+        def quitjob(): inpPr.destroy()
+        but1 = Button(inpPr, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpPr, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 9)
+        but2.place(x=240, y= 10 + heightSpacing * 9)
+        return
+
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
     refreshBut.place(x = 950, y = 130)
 
@@ -691,7 +876,6 @@ def genNav():
         genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
         refreshBut.bind("<Button-1>", temp2)
         addBut1.bind("<Button-1>", notavailable)
-
     def temp3(e): 
         global tabSel
         tabSel = [False] * 7
@@ -700,7 +884,6 @@ def genNav():
         genRight('phong', False), genBotBut('phong')
         refreshBut.bind("<Button-1>", temp3)
         addBut1.bind("<Button-1>", renderInpPhong)
-
     def temp4(e): 
         global tabSel
         tabSel = [False] * 7
@@ -709,7 +892,6 @@ def genNav():
         genRight('nhanVien', False), genBotBut('nhanVien')
         refreshBut.bind("<Button-1>", temp4)
         addBut1.bind("<Button-1>", renderInpNhanVien)
-
     def temp5(e): 
         global tabSel
         tabSel = [False] * 7
@@ -717,7 +899,7 @@ def genNav():
         toggleLbl5
         genRight('khachHang', False), genBotBut('khachHang')
         refreshBut.bind("<Button-1>", temp5)
-
+        addBut1.bind("<Button-1>", renderInpKh)
     def temp6(e): 
         global tabSel
         tabSel = [False] * 7
@@ -725,6 +907,7 @@ def genNav():
         toggleLbl6
         genRight('dichVu', False), genBotBut('dichVu')
         refreshBut.bind("<Button-1>", temp6)
+        addBut1.bind("<Button-1>", renderInpDv)
 
     def temp7(e): 
         global tabSel
@@ -733,6 +916,7 @@ def genNav():
         toggleLbl7
         genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
         refreshBut.bind("<Button-1>", temp7)
+        addBut1.bind("<Button-1>", renderInpProduct)
 
     def temp8(e): 
         global tabSel
@@ -884,28 +1068,11 @@ def genRight(s, includeSearch):
     
     global dvHeader
     dvHeader = ['ID', 'Tên dịch vụ', 'Chi phí']
-    dataDv = [
-        ['DV001', 'Xông hơi', 250000],
-        ['DV002', 'Massage', 500000],
-        ['DV003', 'Tắm hồ bơi', 200000],
-        ['DV004', 'Giặt ủi', 50000],
-        ['DV005', 'Ăn sáng', 500000],
-        ['DV006', 'Ăn trưa', 250000],
-        ['DV007', 'Ăn tối', 250000]
-    ]
+    
     global phongHeader
     phongHeader = ['ID', 'Giá phòng', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
     
-    global dataKh
-    dataKh = [
-        ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
-        ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
-        ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
-        ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
-        ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
-        ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
-        ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
-    ]
+    
     global ptpHeader
     ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Tiền thuê", "Phí dịch vụ", "Tổng tiền", "ID Phòng"]
     
@@ -953,17 +1120,6 @@ def genRight(s, includeSearch):
         dataPhieuThue[index][9] = rentFee + serviceFee
 
         dataPhieuTT.append(tmp)
-        
-    
-    phieuNhapTbAndFood = [
-        ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
-        ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
-        ['P003','H003', 'Bia Sài Gòn', '1000', 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/3/2022'],
-        ['P004','H004', 'Trái cây', '20', 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/3/2022'],
-        ['P005','H005', 'Khăn lạnh', '1000', 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/3/2022'],
-        ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
-        ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
-    ]
     
     dct = {
         'nhanVien': dataNv,
