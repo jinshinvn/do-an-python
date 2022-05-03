@@ -9,8 +9,8 @@
             "TP.HCM",
             "CEO",
             "Hội đồng quản trị",
-            null,
-            null
+            Infinity,
+            Infinity
         ],
         [
             "B002",
@@ -21,8 +21,8 @@
             "Quảng Nam",
             "CTO",
             "Hội đồng quản trị",
-            null,
-            null
+            Infinity,
+            Infinity
         ],
         [
             "B003",
@@ -33,8 +33,8 @@
             "Bình Phước",
             "CFO",
             "Hội đồng quản trị",
-            null,
-            null
+            Infinity,
+            Infinity
         ],
         [
             "G001",
@@ -401,7 +401,7 @@
             "750000",
             ".15",
             "862500.0",
-            "2022-05-02"
+            "2022-05-03"
         ],
         [
             "PTT0002",
@@ -412,7 +412,7 @@
             "1300000",
             ".15",
             "1495000.0",
-            "2022-05-02"
+            "2022-05-03"
         ]
     ],
     "pNhapTbiAndFood": [
@@ -550,6 +550,14 @@
             "Phòng thườnng 1 giường",
             "normal",
             "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"
+        ],
+        [
+            "3",
+            "3",
+            "available",
+            "3",
+            "normal",
+            "3"
         ]
     ],
     "dichVu": [
