@@ -25,6 +25,7 @@ from PIL import ImageTk, Image
 import json
 import threading
 import time
+import sqlite3
 
 # genRight if includeSearch = False: load data from local json
 # genRight if includeSearch = True: don't load data from local json
@@ -42,6 +43,7 @@ navWidth = appWidth/4
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 tabSel = [True, False, False, False, False, False, False]
+con = sqlite3.connect('example.db')
 
 phieuNhapTbAndFood = [
     ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
@@ -62,8 +64,12 @@ dataDv = [
     ['DV007', 'Ăn tối', 250000]
 ]
 dataPhieuThue = [
-    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, 0, 0, 0, 'A101'],
-    ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, 0, 0, 0, 'A102']
+    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
+    ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
+    ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
+    ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
+    ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
+    ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
 ]
 dataNv = [
     ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', inf, inf],
@@ -1232,10 +1238,10 @@ def genBotBut(strTable):
         pdf = FPDF()
         pdf.alias_nb_pages()
         pdf.add_page()
-        pdf.add_font("NotoSans", style="", fname="NotoSans-Regular.ttf", uni=True)
-        pdf.add_font("NotoSans", style="B", fname="NotoSans-Bold.ttf", uni=True)
-        pdf.add_font("NotoSans", style="I", fname="NotoSans-Italic.ttf", uni=True)
-        pdf.add_font("NotoSans", style="BI", fname="NotoSans-BoldItalic.ttf", uni=True)
+        pdf.add_font("NotoSans", style="", fname="./fonts/NotoSans-Regular.ttf", uni=True)
+        pdf.add_font("NotoSans", style="B", fname="./fonts/NotoSans-Bold.ttf", uni=True)
+        pdf.add_font("NotoSans", style="I", fname="./fonts/NotoSans-Italic.ttf", uni=True)
+        pdf.add_font("NotoSans", style="BI", fname="./fonts/NotoSans-BoldItalic.ttf", uni=True)
         
         pdf.set_font("NotoSans", style="B", size=12)
         pdf.cell(0, 15, 'KHÁCH SẠN GRAND HOTEL', 0, 1, 'C')
@@ -1275,7 +1281,6 @@ def genBotBut(strTable):
         pdf.ln(10)
         pdf.cell(0, 10, 'Tổng tiền: ' + str(data2Print[7]), 'L')
         pdf.ln(10)
-
         
         pdf.output('output.pdf', 'F')
        
@@ -1495,9 +1500,47 @@ def genBotBut(strTable):
             genRight(strTable, True)
         return
 
+    def parseAndSave(e):
+        new_table = rSh.get_sheet_data(False, False, False)
+        print(strTable)
+        cur = con.cursor()
+        cur.execute('drop table '+strTable)
+        cur.execute('''CREATE TABLE  '''
+        + strTable
+        + '''    
+            (id text, 
+            idkh text,
+            idnv text,
+            iddv text,
+            ngayden text,
+            ngaydi text,
+            tratruoc bool,
+            thanhtien real,
+            vat real,
+            tongtien real,
+            idphong text
+            
+        )''')
+        for row in new_table:
+            cur.execute(
+                '''
+                INSERT INTO {}
+                VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], str(row[6]), row[7], row[8], row[9], row[10])
+            )
+        con.commit()
+        cur.execute('''
+            SELECT * FROM phieuThue
+        ''')
+        print(cur.fetchall())
+        print('db commited')
+
+        return
+
     sAdLbl1.bind("<<ComboboxSelected>>", tmp1)
     sAdLbl2.bind("<<ComboboxSelected>>", tmp2)
     sortBut2.bind("<<ComboboxSelected>>", tmp3)
+    saveBotBut.bind("<Button-1>", parseAndSave)
     # end binding
 
     saveBotBut.place(x=800, y=630)
@@ -1534,5 +1577,7 @@ genBotBut('phieuThue')
 dashbrd.mainloop()
 winClosed = True
 # listener.join()
+
+con.close()
 
 
