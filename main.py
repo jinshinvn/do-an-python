@@ -69,7 +69,16 @@ dataNv = [
     ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000],
     ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
 ]
-
+dataPh = [
+        ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+        ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
+        ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+        ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+        ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+    ]
+    
 def genNav():
     
     lftNavDiv = Canvas(
@@ -432,7 +441,7 @@ def genNav():
     def renderInpNhanVien(e):
         inpNv = Toplevel(dashbrd)
         inpNv.title('Nhân viên')
-        inpNv.geometry('900x800')
+        inpNv.geometry('700x800')
         lbl1 = Label(inpNv, font = ('Chirp', 10), text = 'ID:')
         lbl2 = Label(inpNv, font = ('Chirp', 10), text = 'Họ')
         lbl3 = Label(inpNv, font = ('Chirp', 10), text = 'Tên')
@@ -596,6 +605,61 @@ def genNav():
         but2.place(x=240, y= 10 + heightSpacing * 10)
         return
 
+    def renderInpPhong(e):
+        phg = Toplevel(dashbrd)
+        phg.title('Nhập thông tin phòng')
+        phg.geometry('400x400')
+        lbl1 = Label(phg, font = ('Chirp', 10), text = 'ID phòng')
+        lbl2 = Label(phg, font = ('Chirp', 10), text = 'Giá phòng')
+        lbl3 = Label(phg, font = ('Chirp', 10), text = 'Trang thái')
+        lbl4 = Label(phg, font = ('Chirp', 10), text = 'Mô tả')
+        lbl5 = Label(phg, font = ('Chirp', 10), text = 'Kiểu phòng')
+        lbl6 = Label(phg, font = ('Chirp', 10), text = 'Trang bị')
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+        lbl4.place(x = 10, y = 10 + heightSpacing * 3)
+        lbl5.place(x = 10, y = 10 + heightSpacing * 4)
+        lbl6.place(x = 10, y = 10 + heightSpacing * 5)
+         
+        txt1 = Text(phg, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(phg, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(phg, font = ('Chirp', 10), height = 1, width = 40)
+        available = ttk.Combobox(phg, values = ['available', 'maintaining', 'occupied'])
+        var2 = ttk.Combobox(phg, values = ['normal', 'vip', 'elite'])
+
+        txt5 = Text(phg, font = ('Chirp', 10), height = 1, width = 40)
+        txt6 = Text(phg, font = ('Chirp', 10), height = 1, width = 40)
+        
+
+        txt1.place(x = 100, y = 10 + heightSpacing * 0)
+        txt2.place(x = 100, y = 10 + heightSpacing * 1)
+        available.place(x = 100, y = 10 + heightSpacing * 2)
+        var2.place(x = 100, y = 10 + heightSpacing * 4)
+        txt5.place(x = 100, y = 10 + heightSpacing * 3)
+        txt6.place(x = 100, y = 10 + heightSpacing * 5)
+        
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(available.get())
+            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(var2.get())
+            tmp.append(txt6.get("1.0",'end-1c'))
+            global dataPh
+            dataPh.append(tmp)
+            genRight('phong', True)
+            phg.destroy()
+        def quitjob(): phg.destroy()
+        but1 = Button(phg, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(phg, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 6)
+        but2.place(x=240, y= 10 + heightSpacing * 6)
+
+        return
+
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
     refreshBut.place(x = 950, y = 130)
 
@@ -607,8 +671,11 @@ def genNav():
         bg = 'white',
         border = '1px solid black'
     )
-    addBut1.bind("<Button-1>", renderInpNhanVien)
+    addBut1.bind("<Button-1>", renderInpPhieuThue)
     addBut1.place(x=340, y=130)
+    def notavailable():
+        messagebox.showwarning(title='Thông báo', message='Hóa đơn tự động sinh từ phiếu thuê phòng.')
+        return
 
     def temp1(e):
         global tabSel
@@ -623,6 +690,7 @@ def genNav():
         tabSel[1] = True, toggleLbl2
         genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
         refreshBut.bind("<Button-1>", temp2)
+        addBut1.bind("<Button-1>", notavailable)
 
     def temp3(e): 
         global tabSel
@@ -631,6 +699,7 @@ def genNav():
         toggleLbl3
         genRight('phong', False), genBotBut('phong')
         refreshBut.bind("<Button-1>", temp3)
+        addBut1.bind("<Button-1>", renderInpPhong)
 
     def temp4(e): 
         global tabSel
@@ -670,8 +739,8 @@ def genNav():
         tabSel = [False] * 7
         tabSel[7] = True
         toggleLbl8
-        genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
-        refreshBut.bind("<Button-1>", temp8)
+        # genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
+        # refreshBut.bind("<Button-1>", temp8)
 
 
 
@@ -826,15 +895,6 @@ def genRight(s, includeSearch):
     ]
     global phongHeader
     phongHeader = ['ID', 'Giá phòng', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
-    dataPh = [
-        ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-        ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
-        ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-    ]
     
     global dataKh
     dataKh = [
