@@ -569,6 +569,7 @@ def genNav():
         txt10.place(x = 100, y = 10 + heightSpacing * 9)
         
         def addData():
+        
             tmp = []
             tmp.append(txt1.get("1.0",'end-1c'))
             tmp.append(txt2.get("1.0",'end-1c'))
@@ -583,9 +584,20 @@ def genNav():
             tmp.append(txt6.get("1.0",'end-1c'))
             tmp.append(txt7.get("1.0",'end-1c'))
             tmp.append(txt8.get("1.0",'end-1c'))
-            tmp.append(int(txt9.get("1.0",'end-1c')))
-            tmp.append(int(txt10.get("1.0",'end-1c')))
+            try:
+                tmp.append(int(txt9.get("1.0",'end-1c')))
+            except ValueError:
+                messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng nhập tiền thưởng bằng số.')
+            try:
+                tmp.append(int(txt10.get("1.0",'end-1c')))
+            except ValueError:
+                messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng nhập tiền thưởng bằng số.')
             global dataNv
+            for row in dataNv:
+                if (row[0] == tmp[0]):
+                    messagebox.showwarning(title = 'Cảnh báo', message = 'ID này đã tồn tại.')
+                    return
+            if (len(tmp) != 10): return
             dataNv.append(tmp)
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             quitjob()
@@ -900,7 +912,7 @@ def genNav():
         return
 
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
-    refreshBut.place(x = 950, y = 130)
+    refreshBut.place(x = 960, y = 105)
 
     
     addBut1 = Button(
@@ -1264,7 +1276,6 @@ def genBotBut(strTable):
         width = 7
     )
     def printSelectedRow():
-        # print(strTable)
         data2Print = []
         if (strTable != 'phieuThanhToan'):
             messagebox.showwarning(title='Cảnh báo', message='Tính năng không khả dụng. Vui lòng chọn mục Hóa đơn để in.')
@@ -1273,8 +1284,10 @@ def genBotBut(strTable):
         try:
             if (a[0] == 'row'):
                 data2Print = dataTblList[a[1]]
+                index = a[1]
             else:
                 data2Print = dataTblList[a[0]]
+                index = a[0]
         except (IndexError):
             messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng chọn hàng cần xuất.')
 
@@ -1303,8 +1316,8 @@ def genBotBut(strTable):
         pdf.cell(100, 10, 'Nhân viên: ' + data2Print[3], 'L', )
         pdf.cell(100, 10, 'In lúc:' + datetime.now().strftime("%H:%M:%S"), 'R')
         pdf.ln(5)
-        pdf.cell(100, 10, 'Ngày ở: ' , 'L')
-        pdf.cell(100, 10, 'Ngày đi: ' , 'R')
+        pdf.cell(100, 10, 'Ngày ở: ' + str(dataPhieuThue[index][4]) , 'L')
+        pdf.cell(100, 10, 'Ngày đi: ' + str(dataPhieuThue[index][5]) , 'R')
         pdf.ln(10)
 
         pdf.set_left_margin(40)
@@ -1325,7 +1338,7 @@ def genBotBut(strTable):
         pdf.cell(0, 10, 'Tổng tiền: ' + str(data2Print[7]), 'L')
         pdf.ln(10)
         
-        pdf.output('output.pdf', 'F')
+        pdf.output('bill.pdf', 'F')
        
     exportBotBut = Button(
         dashbrd,
