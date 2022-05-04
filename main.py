@@ -12,7 +12,9 @@ from tkinter import PhotoImage
 from tkinter import Toplevel
 from tkinter import Radiobutton
 from tkinter import Entry
-# from turtle import RawTurtle
+import matplotlib.figure
+import matplotlib.patches
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkcalendar import Calendar
 from fpdf import FPDF
 from datetime import date
@@ -33,6 +35,7 @@ import hashlib
 # genRight if includeSearch = False: load data from local json
 # genRight if includeSearch = True: don't load data from local json
 
+chungTaDangODau = ''
 isSaved = True
 cfg_radius = 60
 cfg_clr = 'white'
@@ -913,7 +916,54 @@ def genNav():
 
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
     refreshBut.place(x = 960, y = 105)
-
+    deleteBut = Button(dashbrd, text = 'Delete', bg = 'white')
+    deleteBut.place(x = 1020, y = 105)
+    def deleteRow(e):
+        if (chungTaDangODau == 'phieuThanhToan'):
+            messagebox.showwarning(title='Cảnh báo', message='Chức năng không hỗ trợ.')
+            return
+        delFr = Toplevel(dashbrd)
+        delFr.title('Xóa item')
+        delFr.geometry('300x180')
+        text = Label(delFr, text = 'Nhập stt hàng cần xóa: ', padx = 5, pady = 5)
+        text.place(x = 10, y = 10)
+        inp = Text(delFr, width = 30, padx = 5, pady = 5, height = 1)
+        inp.place(x = 10, y = 50)
+        def deleteAndExit():
+            k = -1
+            try:
+                k = int(inp.get("1.0",'end-1c'))
+            except:
+                messagebox.showwarning(title='Cảnh báo', message='Vui lòng nhập đúng định dạng.')
+            if (chungTaDangODau == 'phieuThue'):
+                global dataPhieuThue
+                del dataPhieuThue[k-1]
+                genRight('phieuThue', True)
+            if (chungTaDangODau == 'nhanVien'):
+                global dataNv
+                del dataNv[k-1]
+                genRight('nhanVien', True)
+            if (chungTaDangODau == 'phong'):
+                global dataPh
+                del dataPh[k-1]
+                genRight('phong', True)
+            if (chungTaDangODau == 'khachHang'):
+                global dataKh
+                del dataKh[k-1]
+                genRight('khachHang', True)
+            if (chungTaDangODau == 'dichVu'):
+                global dataDv
+                del dataDv[k-1]
+                genRight('dichVu', True)
+            if (chungTaDangODau == 'pNhapTbiAndFood'):
+                global phieuNhapTbAndFood
+                del phieuNhapTbAndFood[k-1]
+                genRight('pNhapTbiAndFood', True)
+            inp.destroy()
+        save = Button(delFr, text = 'Delete', command = deleteAndExit)
+        save.place(x = 120, y = 100)
+        return
+    deleteBut.bind("<Button-1>", deleteRow)
     
     addBut1 = Button(
         dashbrd,
@@ -983,12 +1033,29 @@ def genNav():
         genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
         refreshBut.bind("<Button-1>", temp7)
         addBut1.bind("<Button-1>", renderInpProduct)
+    def thongke():
+        fig = matplotlib.figure.Figure(figsize=(5,5))
+        ax = fig.add_subplot(111)
+        percent = []
+        label = []
+        for row in phieuNhapTbAndFood:
+            percent.append(row[3])
+            label.append(row[2])
+        ax.pie(percent) 
+        ax.legend(label)
+        circle=matplotlib.patches.Circle( (0,0), 0.7, color='white')
+        ax.add_artist(circle)
 
+        thongke = Toplevel(dashbrd)
+        canvas = FigureCanvasTkAgg(fig, master = thongke)
+        canvas.get_tk_widget().pack()
+        canvas.draw()
+        return
     def temp8(e): 
         global tabSel
         tabSel = [False] * 7
-        tabSel[7] = True
         toggleLbl8
+        thongke()
         # genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
         # refreshBut.bind("<Button-1>", temp8)
 
@@ -1260,6 +1327,8 @@ def genRight(s, includeSearch):
     rSh.place(x=340, y=180)
 
 def genBotBut(strTable):
+    global chungTaDangODau
+    chungTaDangODau = strTable
     with open('./json/data.json', 'r', encoding='utf-8') as fo:
         dataRead = json.loads(fo.read())
     dataTbl4GenRight = json.dumps(dataRead[strTable], ensure_ascii=False)
@@ -1347,7 +1416,7 @@ def genBotBut(strTable):
         bg = 'white',
         border = '1px solid black',
         height = 1,
-        width = 10,
+        width = 15,
         command = printSelectedRow
     )
 
@@ -1377,9 +1446,9 @@ def genBotBut(strTable):
     toRenderHeader2 = []
     toRenderHeader3 = []
     toRenderHeader4 = []
-    sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao')
-    sAdTextLbl2 = Label(dashbrd, text = 'Từ')
-    sAdTextLbl3 = Label(dashbrd, text = 'Đến')
+    sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao', bg = 'white')
+    sAdTextLbl2 = Label(dashbrd, text = 'Từ', bg = 'white')
+    sAdTextLbl3 = Label(dashbrd, text = 'Đến', bg = 'white')
 
     selected0 = StringVar()
     sortBut1 = ttk.Combobox(
@@ -1893,27 +1962,27 @@ class loginUI():
 
 
 
-# myLoginUI = loginUI(1024, 576 , 150, 75)
-# myLoginUI.renderFrame()
+myLoginUI = loginUI(1024, 576 , 150, 75)
+myLoginUI.renderFrame()
 
 
 
-# if (loggedIn):
-dashbrd = Tk()
-global icoAdd
-rawIcoAdd = Image.open('./img/add.png')
-rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
-icoAdd = ImageTk.PhotoImage(rawIcoAdd)
-# startAutoSave()
-# startKeyListener()
-genDashUI()
-genNav()
-# genTopBanner()
-genRight('phieuThue', False)
-genBotBut('phieuThue')
-dashbrd.mainloop()
-winClosed = True
-# listener.join()
+if (loggedIn):
+    dashbrd = Tk()
+    global icoAdd
+    rawIcoAdd = Image.open('./img/add.png')
+    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
+    # startAutoSave()
+    # startKeyListener()
+    genDashUI()
+    genNav()
+    # genTopBanner()
+    genRight('phieuThue', False)
+    genBotBut('phieuThue')
+    dashbrd.mainloop()
+    winClosed = True
+    # listener.join()
 
 con.close()
 
