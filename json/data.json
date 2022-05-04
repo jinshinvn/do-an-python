@@ -9,8 +9,8 @@
             "TP.HCM",
             "CEO",
             "Hội đồng quản trị",
-            Infinity,
-            Infinity
+            99999999,
+            99999999
         ],
         [
             "B002",
@@ -21,8 +21,8 @@
             "Quảng Nam",
             "CTO",
             "Hội đồng quản trị",
-            Infinity,
-            Infinity
+            99999999,
+            99999999
         ],
         [
             "B003",
@@ -33,8 +33,8 @@
             "Bình Phước",
             "CFO",
             "Hội đồng quản trị",
-            Infinity,
-            Infinity
+            99999999,
+            99999999
         ],
         [
             "G001",
@@ -371,7 +371,7 @@
             "DV001",
             "20/10/2021",
             "25/10/2021",
-            false,
+            0,
             500000,
             250000,
             750000,
@@ -384,7 +384,7 @@
             "DV002",
             "30/01/2022",
             "17/02/2022",
-            false,
+            0,
             800000,
             500000,
             1300000,
@@ -397,7 +397,7 @@
             "DV003",
             "18/06/2015",
             "28/06/2015",
-            true,
+            1,
             800000,
             200000,
             1000000,
@@ -410,7 +410,7 @@
             "DV008",
             "08/01/2016",
             "17/02/2016",
-            false,
+            0,
             1000000,
             0,
             1000000,
@@ -422,8 +422,8 @@
             "M002",
             "DV008",
             "08/01/2018",
-            "17/02/2018",
-            true,
+            "17/02/2022",
+            1,
             1000000,
             0,
             1000000,
@@ -436,11 +436,24 @@
             "DV004",
             "08/01/2019",
             "17/02/2019",
-            false,
+            0,
             1000000,
             50000,
             1050000,
             "B202"
+        ],
+        [
+            "PTP0007",
+            "KH005",
+            "M002",
+            "DV001",
+            "06/04/2021",
+            "12/05/2021",
+            0,
+            500000,
+            250000,
+            750000,
+            "A101"
         ]
     ],
     "phieuThanhToan": [
@@ -493,7 +506,7 @@
             "DV008",
             "M002",
             "Nguyễn Võ  Lợi",
-            40,
+            1501,
             "1000000",
             ".15",
             "1150000.0",
@@ -509,6 +522,17 @@
             ".15",
             "1207500.0",
             "2022-05-04"
+        ],
+        [
+            "PTT0007",
+            "DV001",
+            "M002",
+            "Nguyễn Võ  Lợi",
+            36,
+            "750000",
+            ".15",
+            "862500.0",
+            "2022-05-04"
         ]
     ],
     "pNhapTbiAndFood": [
@@ -516,136 +540,136 @@
             "P001",
             "H001",
             "Coca-cola lon",
-            "1000",
+            1000,
             "NCC001",
             "Nhà cung cấp 1",
             "NV01",
             500000,
-            "10/3/2022"
+            "10/03/2022"
         ],
         [
             "P002",
             "H002",
             "Pepsi lon",
-            "1000",
+            1000,
             "NCC002",
             "Nhà cung cấp 2",
             "NV01",
             500000,
-            "11/3/2022"
+            "11/03/2022"
         ],
         [
             "P003",
             "H003",
             "Bia Sài Gòn",
-            "1000",
+            1000,
             "NCC003",
             "Nhà cung cấp 3",
             "NV01",
             500000,
-            "12/3/2022"
+            "12/03/2022"
         ],
         [
             "P004",
             "H004",
             "Trái cây",
-            "20",
+            20,
             "NCC004",
             "Nhà cung cấp 4",
             "NV01",
             100000,
-            "14/3/2022"
+            "14/03/2022"
         ],
         [
             "P005",
             "H005",
             "Khăn lạnh",
-            "1000",
+            1000,
             "NCC005",
             "Nhà cung cấp 5",
             "NV01",
             100000,
-            "19/3/2022"
+            "19/03/2022"
         ],
         [
             "P006",
             "H006",
             "Thực phẩm",
-            "20",
+            20,
             "NCC006",
             "Nhà cung cấp 6",
             "NV02",
             200000,
-            "21/3/2022"
+            "21/03/2022"
         ],
         [
             "P007",
             "H007",
             "Pepsi lon",
-            "1000",
+            1000,
             "NCC002",
             "Nhà cung cấp 7",
             "NV01",
             500000,
-            "25/3/2022"
+            "25/03/2022"
         ]
     ],
     "phong": [
         [
             "A101",
-            "500000",
+            500000,
             "available",
             "Phòng thường 1 giường",
             "normal",
-            "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"
+            "1 giường+1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"
         ],
         [
             "A102",
-            "800000",
+            800000,
             "available",
             "Phòng thường 2 giường",
             "normal",
-            "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"
+            "2 giường+1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"
         ],
         [
             "B202",
-            "1000000",
+            1000000,
             "available",
             "Phòng cao cấp 1 giường",
             "elite",
-            "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"
+            "1 giường+1 tu lanh lon+2 bo ban ghe +1 may lanh+4 den+1 bon tam"
         ],
         [
             "B201",
-            "1200000",
+            1200000,
             "available",
             "Phòng thường 2 giường",
             "elite",
-            "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"
+            "2 giường+1 tu lanh lon+2 bo ban ghe +1 may lanh+4 den+1 bon tam"
         ],
         [
             "C301",
-            "3000000",
+            3000000,
             "available",
             "Phòng thượng hạng 1 giường",
             "vip",
-            "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"
+            "1 giường+1 tu lanh lon+3 bo ban ghe +2 may lanh+6 den+1 bon tam+dien thoai+quay bep+minibar"
         ],
         [
             "C303",
-            "3200000",
+            3200000,
             "occupied",
             "Phòng thượng hạng 2 giường",
             "vip",
-            "['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"
+            "2 giường+1 tu lanh lon+3 bo ban ghe +2 may lanh+6 den+1 bon tam+dien thoai+quay bep+minibar"
         ],
         [
             "A103",
-            "600000",
+            600000,
             "maintaining",
             "Phòng thườnng 1 giường",
             "normal",
-            "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"
+            "giường+ 1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"
         ]
     ],
     "dichVu": [

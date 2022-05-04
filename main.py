@@ -12,7 +12,9 @@ from tkinter import PhotoImage
 from tkinter import Toplevel
 from tkinter import Radiobutton
 from tkinter import Entry
-# from turtle import RawTurtle
+import matplotlib.figure
+import matplotlib.patches
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkcalendar import Calendar
 from fpdf import FPDF
 from datetime import date
@@ -33,6 +35,7 @@ import hashlib
 # genRight if includeSearch = False: load data from local json
 # genRight if includeSearch = True: don't load data from local json
 
+chungTaDangODau = ''
 isSaved = True
 cfg_radius = 60
 cfg_clr = 'white'
@@ -48,82 +51,117 @@ heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 tabSel = [True, False, False, False, False, False, False]
 
-con = sqlite3.connect('example.db')
-# curGlobal = con.cursor()
-# curGlobal.execute('''
-#             SELECT * FROM phieuThue
-#         ''')
-# print(curGlobal.fetchall())
+# fetching data from local db files
 
-dataPhieuThue = [
-    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
-    ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
-    ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
-    ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
-    ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
-    ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
-]
-phieuNhapTbAndFood = [
-    ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
-    ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
-    ['P003','H003', 'Bia Sài Gòn', '1000', 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/3/2022'],
-    ['P004','H004', 'Trái cây', '20', 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/3/2022'],
-    ['P005','H005', 'Khăn lạnh', '1000', 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/3/2022'],
-    ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
-    ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
-]
-dataDv = [
-    ['DV001', 'Xông hơi', 250000],
-    ['DV002', 'Massage', 500000],
-    ['DV003', 'Tắm hồ bơi', 200000],
-    ['DV004', 'Giặt ủi', 50000],
-    ['DV005', 'Ăn sáng', 500000],
-    ['DV006', 'Ăn trưa', 250000],
-    ['DV007', 'Ăn tối', 250000]
-]
-dataNv = [
-    ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', inf, inf],
-    ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị', inf, inf],
-    ['B003', 'Huỳnh Nguyên', 'Khang', 'Nam', 1982, 'Bình Phước', 'CFO', 'Hội đồng quản trị', inf, inf],
-    ['G001', 'Hoàng Hòa', 'Hợp', 'Nam', 1982, 'Bình Thuận', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
-    ['G002', 'Lưu Duy', 'Hiếu', 'Nam', 1991, 'Long An', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
-    ['G003', 'Hồ Văn', 'Thông', 'Nam', 1998, 'Gia Lai', 'Trưởng phòng', 'Bảo vệ', 6000000, 1000000],
-    ['G004', 'Nguyễn Văn', 'Sinh', 'Nam', 1991, 'TP.HCM', 'Nhân viên', 'Bảo vệ', 5000000, 600000],
-    ['E001', 'Châu Văn', 'Đạt', 'Nam', 1998, 'Quảng Nam', 'Trưởng phòng', 'Kế toán', 8000000, 600000],
-    ['E002', 'Nguyễn Thị', 'Nga', 'Nữ', 1991, 'Long An', 'Nhân viên', 'Kế toán', 7000000, 600000],
-    ['E003', 'Vũ Việt', 'Đông', 'Nam', 1982, 'Tiền Giang', 'Nhân viên', 'Kế toán', 7000000, 600000],
-    ['C001', 'Đào Ngọc', 'Cẩm', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
-    ['C002', 'Huỳnh Thụy Phương', 'Khánh', 'Nữ', 1996, 'TP.HCM', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
-    ['F001', 'Nguyễn Văn Gia', 'Trí', 'Nam', 1992, 'Tiền Giang', 'Trưởng phòng', 'Quản trị nhân sự', 6000000, 600000],
-    ['F002', 'Lưu Ngọc Hoài ', 'Trinh', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Quản trị nhân sự', 6000000, 600000],
-    ['Z001', 'Đoàn Trần Văn ', 'Kha', 'Nam', 1996, 'Long An', 'Bếp trưởng', 'Bếp ăn', 4000000, 600000],
-    ['Z002', 'David ', 'Joe', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 8700000, 900000],
-    ['Z003', 'Phạm Toàn ', 'Thắng', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 4000000, 600000],
-    ['M001', 'Phạm Quốc ', 'Khải', 'Nam', 1996, 'Tiền Giang', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
-    ['M002', 'Nguyễn Võ ', 'Lợi', 'Nam', 2000, 'Gia Lai', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
-    ['T001', 'Lưu Bích ', 'Thoa', 'Nữ', 1992, 'Quảng Nam', 'Nhân viên', 'massage', 7000000, 600000],
-    ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000],
-    ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000],
-    ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
-]
-dataPh = [
-    ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-    ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
-    ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-    ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-    ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-    ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-    ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-]
-dataKh = [
-    ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
-    ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
-    ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
-    ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
-    ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
-    ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
-    ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
-]
+con = sqlite3.connect('example.db')
+curGlobal = con.cursor()
+
+curGlobal.execute('''SELECT * FROM phieuThue''')
+dataPhieuThue = curGlobal.fetchall()
+tmp = []
+for row in dataPhieuThue: tmp.append(list(row))
+dataPhieuThue = tmp
+
+curGlobal.execute('''SELECT * FROM nhanVien''')
+dataNv = curGlobal.fetchall()
+tmp = []
+for row in dataNv: tmp.append(list(row))
+dataNv = tmp
+
+curGlobal.execute('''SELECT * FROM phong''')
+dataPh = curGlobal.fetchall()
+tmp = []
+for row in dataPh: tmp.append(list(row))
+dataPh = tmp
+
+curGlobal.execute('''SELECT * FROM khachHang''')
+dataKh = curGlobal.fetchall()
+tmp = []
+for row in dataKh: tmp.append(list(row))
+dataKh = tmp
+
+curGlobal.execute('''SELECT * FROM dichVu''')
+dataDv = curGlobal.fetchall()
+tmp = []
+for row in dataDv: tmp.append(list(row))
+dataDv = tmp
+
+curGlobal.execute('''SELECT * FROM pNhapTbiAndFood''')
+phieuNhapTbAndFood = curGlobal.fetchall()
+tmp = []
+for row in phieuNhapTbAndFood: tmp.append(list(row))
+phieuNhapTbAndFood = tmp
+
+# initialize database by lists
+# dataPhieuThue = [
+#     ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
+#     ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
+#     ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
+#     ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
+#     ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
+#     ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
+# ]
+# phieuNhapTbAndFood = [
+#     ['P001','H001', 'Coca-cola lon', 1000, 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/03/2022'],
+#     ['P002','H002', 'Pepsi lon', 1000, 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/03/2022'],
+#     ['P003','H003', 'Bia Sài Gòn', 1000, 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/03/2022'],
+#     ['P004','H004', 'Trái cây', 20, 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/03/2022'],
+#     ['P005','H005', 'Khăn lạnh', 1000, 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/03/2022'],
+#     ['P006','H006', 'Thực phẩm', 20, 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/03/2022'],
+#     ['P007','H007', 'Pepsi lon', 1000, 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/03/2022'],
+# ]
+# dataDv = [
+#     ['DV001', 'Xông hơi', 250000],
+#     ['DV002', 'Massage', 500000],
+#     ['DV003', 'Tắm hồ bơi', 200000],
+#     ['DV004', 'Giặt ủi', 50000],
+#     ['DV005', 'Ăn sáng', 500000],
+#     ['DV006', 'Ăn trưa', 250000],
+#     ['DV007', 'Ăn tối', 250000]
+# ]
+# dataNv = [
+#     ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', 99999999, 99999999],
+#     ['B002', 'Kim Đức', 'Long', 'Nam', 1983, 'Quảng Nam', 'CTO', 'Hội đồng quản trị', 99999999, 99999999],
+#     ['B003', 'Huỳnh Nguyên', 'Khang', 'Nam', 1982, 'Bình Phước', 'CFO', 'Hội đồng quản trị', 99999999, 99999999],
+#     ['G001', 'Hoàng Hòa', 'Hợp', 'Nam', 1982, 'Bình Thuận', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
+#     ['G002', 'Lưu Duy', 'Hiếu', 'Nam', 1991, 'Long An', 'Nhân viên', 'Bảo vệ', 5000000, 800000],
+#     ['G003', 'Hồ Văn', 'Thông', 'Nam', 1998, 'Gia Lai', 'Trưởng phòng', 'Bảo vệ', 6000000, 1000000],
+#     ['G004', 'Nguyễn Văn', 'Sinh', 'Nam', 1991, 'TP.HCM', 'Nhân viên', 'Bảo vệ', 5000000, 600000],
+#     ['E001', 'Châu Văn', 'Đạt', 'Nam', 1998, 'Quảng Nam', 'Trưởng phòng', 'Kế toán', 8000000, 600000],
+#     ['E002', 'Nguyễn Thị', 'Nga', 'Nữ', 1991, 'Long An', 'Nhân viên', 'Kế toán', 7000000, 600000],
+#     ['E003', 'Vũ Việt', 'Đông', 'Nam', 1982, 'Tiền Giang', 'Nhân viên', 'Kế toán', 7000000, 600000],
+#     ['C001', 'Đào Ngọc', 'Cẩm', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
+#     ['C002', 'Huỳnh Thụy Phương', 'Khánh', 'Nữ', 1996, 'TP.HCM', 'Nhân viên', 'Vệ sinh', 4000000, 600000],
+#     ['F001', 'Nguyễn Văn Gia', 'Trí', 'Nam', 1992, 'Tiền Giang', 'Trưởng phòng', 'Quản trị nhân sự', 6000000, 600000],
+#     ['F002', 'Lưu Ngọc Hoài ', 'Trinh', 'Nữ', 1992, 'Bình Dương', 'Nhân viên', 'Quản trị nhân sự', 6000000, 600000],
+#     ['Z001', 'Đoàn Trần Văn ', 'Kha', 'Nam', 1996, 'Long An', 'Bếp trưởng', 'Bếp ăn', 4000000, 600000],
+#     ['Z002', 'David ', 'Joe', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 8700000, 900000],
+#     ['Z003', 'Phạm Toàn ', 'Thắng', 'Nam', 1998, 'TP.HCM', 'Đầu bếp', 'Bếp ăn', 4000000, 600000],
+#     ['M001', 'Phạm Quốc ', 'Khải', 'Nam', 1996, 'Tiền Giang', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
+#     ['M002', 'Nguyễn Võ ', 'Lợi', 'Nam', 2000, 'Gia Lai', 'Tiếp tân', 'Lễ tân', 3000000, 600000],
+#     ['T001', 'Lưu Bích ', 'Thoa', 'Nữ', 1992, 'Quảng Nam', 'Nhân viên', 'massage', 7000000, 600000],
+#     ['T002', 'Trần Thục ', 'Quyên', 'Nữ', 2000, 'Tây Ninh', 'Nhân viên', 'massage', 7000000, 600000],
+#     ['K001', 'Hứa Vĩnh ', 'Đức', 'Nam', 1990, 'Bến Tre', 'Nhân viên', 'Kho vận', 7000000, 600000],
+#     ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
+# ]
+# dataPh = [
+#     ['A101', 500000, 'available', 'Phòng thường 1 giường','normal', "1 giường+1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"],
+#     ['A102', 800000, 'available', 'Phòng thường 2 giường','normal', "2 giường+1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"],
+#     ['B202', 1000000, 'available', 'Phòng cao cấp 1 giường','elite', "1 giường+1 tu lanh lon+2 bo ban ghe +1 may lanh+4 den+1 bon tam"],
+#     ['B201', 1200000, 'available', 'Phòng thường 2 giường','elite', "2 giường+1 tu lanh lon+2 bo ban ghe +1 may lanh+4 den+1 bon tam"],
+#     ['C301', 3000000, 'available', 'Phòng thượng hạng 1 giường','vip', "1 giường+1 tu lanh lon+3 bo ban ghe +2 may lanh+6 den+1 bon tam+dien thoai+quay bep+minibar"],
+#     ['C303', 3200000, 'occupied', 'Phòng thượng hạng 2 giường','vip',"2 giường+1 tu lanh lon+3 bo ban ghe +2 may lanh+6 den+1 bon tam+dien thoai+quay bep+minibar"],
+#     ['A103', 600000, 'maintaining', 'Phòng thườnng 1 giường','normal', "giường+ 1 tu lanh nho+1 bo ban ghe+1 may lanh+2 den"]
+# ]
+# dataKh = [
+#     ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
+#     ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
+#     ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
+#     ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
+#     ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
+#     ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
+#     ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
+# ]
 
 def genNav():
     
@@ -481,9 +519,6 @@ def genNav():
         genIco8(30, 30)
     genIco()
 
-    def showTbl():
-        return
-
     def renderInpNhanVien(e):
         inpNv = Toplevel(dashbrd)
         inpNv.title(' Thông tin nhân viên')
@@ -537,25 +572,35 @@ def genNav():
         txt10.place(x = 100, y = 10 + heightSpacing * 9)
         
         def addData():
+        
             tmp = []
             tmp.append(txt1.get("1.0",'end-1c'))
             tmp.append(txt2.get("1.0",'end-1c'))
             tmp.append(txt3.get("1.0",'end-1c'))
             k = var.get()
-            if (k == 1):
-                tmp.append('Nam')
-            else:
-                tmp.append('Nữ')
+            if (k == 1): tmp.append('Nam')
+            else: tmp.append('Nữ')
             try:
                 tmp.append(int(txt5.get("1.0",'end-1c')))
             except ValueError:
-                messagebox.showwarning(title='Cảnh báo', message = 'Vui lòng nhập lại ô năm sinh.')
+                messagebox.showwarning(title='Cảnh báo', message = 'Vui lòng nhập năm sinh bằng số.')
             tmp.append(txt6.get("1.0",'end-1c'))
             tmp.append(txt7.get("1.0",'end-1c'))
             tmp.append(txt8.get("1.0",'end-1c'))
-            tmp.append(int(txt9.get("1.0",'end-1c')))
-            tmp.append(int(txt10.get("1.0",'end-1c')))
+            try:
+                tmp.append(int(txt9.get("1.0",'end-1c')))
+            except ValueError:
+                messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng nhập tiền thưởng bằng số.')
+            try:
+                tmp.append(int(txt10.get("1.0",'end-1c')))
+            except ValueError:
+                messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng nhập tiền thưởng bằng số.')
             global dataNv
+            for row in dataNv:
+                if (row[0] == tmp[0]):
+                    messagebox.showwarning(title = 'Cảnh báo', message = 'ID này đã tồn tại.')
+                    return
+            if (len(tmp) != 10): return
             dataNv.append(tmp)
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             quitjob()
@@ -631,8 +676,6 @@ def genNav():
             tmp.append(0)
             tmp.append(0)
             tmp.append(txt9.get("1.0",'end-1c'))
-            
-            print(tmp)
             dataPhieuThue.append(tmp)
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             inpPTP.destroy()
@@ -649,7 +692,7 @@ def genNav():
 
     def renderInpPhong(e):
         phg = Toplevel(dashbrd)
-        phg.title('Nhập thông tin phòng')
+        phg.title('Thông tin phòng')
         phg.geometry('400x400')
         lbl1 = Label(phg, font = ('Chirp', 10), text = 'ID phòng')
         lbl2 = Label(phg, font = ('Chirp', 10), text = 'Giá phòng')
@@ -685,7 +728,7 @@ def genNav():
         def addData():
             tmp = []
             tmp.append(txt1.get("1.0",'end-1c'))
-            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(int(txt2.get("1.0",'end-1c')))
             tmp.append(available.get())
             tmp.append(txt5.get("1.0",'end-1c'))
             tmp.append(var2.get())
@@ -745,8 +788,9 @@ def genNav():
             tmp.append(txt2.get("1.0",'end-1c'))
             tmp.append(txt3.get("1.0",'end-1c'))
             tmp.append(gender.get())
-            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(int(txt5.get("1.0",'end-1c')))
             tmp.append(txt6.get("1.0",'end-1c'))
+            for i in range(0, 4): tmp.append('')
             global dataKh
             dataKh.append(tmp)
             genRight('khachHang', True)
@@ -779,13 +823,22 @@ def genNav():
         txt1.place(x = 100, y = 10 + heightSpacing * 0)
         txt2.place(x = 100, y = 10 + heightSpacing * 1)
         txt3.place(x = 100, y = 10 + heightSpacing * 2)
+        global dataDv
+        txt1.insert('end', 'DV' + str(len(dataDv)+1).zfill(3))
 
         def addData():
             tmp = []
+            global dataDv
             tmp.append(txt1.get("1.0",'end-1c'))
             tmp.append(txt2.get("1.0",'end-1c'))
-            tmp.append(txt3.get("1.0",'end-1c'))
-            global dataDv
+            try:
+                tmp.append(int(txt3.get("1.0",'end-1c')))
+            except ValueError:
+                messagebox.showwarning(title='Cảnh báo', message = 'Vui lòng nhập giá dịch vụ ở định dạng số.')
+            for row in dataDv:
+                if (row[0] == txt1.get("1.0",'end-1c')):
+                    messagebox.showwarning(title='Cảnh báo', message = 'ID dịch vụ đã tồn tại. Vui lòng dùng ID khác.')
+                    return
             dataDv.append(tmp)
             genRight('dichVu', True)
         def quitjob(): inpDv.destroy()
@@ -862,8 +915,55 @@ def genNav():
         return
 
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
-    refreshBut.place(x = 950, y = 130)
-
+    refreshBut.place(x = 960, y = 105)
+    deleteBut = Button(dashbrd, text = 'Delete', bg = 'white')
+    deleteBut.place(x = 1020, y = 105)
+    def deleteRow(e):
+        if (chungTaDangODau == 'phieuThanhToan'):
+            messagebox.showwarning(title='Cảnh báo', message='Chức năng không hỗ trợ.')
+            return
+        delFr = Toplevel(dashbrd)
+        delFr.title('Xóa item')
+        delFr.geometry('300x180')
+        text = Label(delFr, text = 'Nhập stt hàng cần xóa: ', padx = 5, pady = 5)
+        text.place(x = 10, y = 10)
+        inp = Text(delFr, width = 30, padx = 5, pady = 5, height = 1)
+        inp.place(x = 10, y = 50)
+        def deleteAndExit():
+            k = -1
+            try:
+                k = int(inp.get("1.0",'end-1c'))
+            except:
+                messagebox.showwarning(title='Cảnh báo', message='Vui lòng nhập đúng định dạng.')
+            if (chungTaDangODau == 'phieuThue'):
+                global dataPhieuThue
+                del dataPhieuThue[k-1]
+                genRight('phieuThue', True)
+            if (chungTaDangODau == 'nhanVien'):
+                global dataNv
+                del dataNv[k-1]
+                genRight('nhanVien', True)
+            if (chungTaDangODau == 'phong'):
+                global dataPh
+                del dataPh[k-1]
+                genRight('phong', True)
+            if (chungTaDangODau == 'khachHang'):
+                global dataKh
+                del dataKh[k-1]
+                genRight('khachHang', True)
+            if (chungTaDangODau == 'dichVu'):
+                global dataDv
+                del dataDv[k-1]
+                genRight('dichVu', True)
+            if (chungTaDangODau == 'pNhapTbiAndFood'):
+                global phieuNhapTbAndFood
+                del phieuNhapTbAndFood[k-1]
+                genRight('pNhapTbiAndFood', True)
+            inp.destroy()
+        save = Button(delFr, text = 'Delete', command = deleteAndExit)
+        save.place(x = 120, y = 100)
+        return
+    deleteBut.bind("<Button-1>", deleteRow)
     
     addBut1 = Button(
         dashbrd,
@@ -873,7 +973,7 @@ def genNav():
         border = '1px solid black'
     )
     addBut1.bind("<Button-1>", renderInpPhieuThue)
-    addBut1.place(x=340, y=130)
+    addBut1.place(x=340, y=110)
     def notavailable():
         messagebox.showwarning(title='Thông báo', message='Hóa đơn tự động sinh từ phiếu thuê phòng.')
         return
@@ -933,12 +1033,29 @@ def genNav():
         genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
         refreshBut.bind("<Button-1>", temp7)
         addBut1.bind("<Button-1>", renderInpProduct)
+    def thongke():
+        fig = matplotlib.figure.Figure(figsize=(5,5))
+        ax = fig.add_subplot(111)
+        percent = []
+        label = []
+        for row in phieuNhapTbAndFood:
+            percent.append(row[3])
+            label.append(row[2])
+        ax.pie(percent) 
+        ax.legend(label)
+        circle=matplotlib.patches.Circle( (0,0), 0.7, color='white')
+        ax.add_artist(circle)
 
+        thongke = Toplevel(dashbrd)
+        canvas = FigureCanvasTkAgg(fig, master = thongke)
+        canvas.get_tk_widget().pack()
+        canvas.draw()
+        return
     def temp8(e): 
         global tabSel
         tabSel = [False] * 7
-        tabSel[7] = True
         toggleLbl8
+        thongke()
         # genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
         # refreshBut.bind("<Button-1>", temp8)
 
@@ -1088,12 +1205,13 @@ def genRight(s, includeSearch):
     global phongHeader
     phongHeader = ['ID', 'Giá phòng', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
     
-    
     global ptpHeader
     ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Tiền thuê", "Phí dịch vụ", "Tổng tiền", "ID Phòng"]
     
     global pttHeader
     pttHeader = ['ID Phiếu', 'ID dịch vụ', 'ID nhân viên', 'Tên nhân viên', 'Số ngày ở', 'Tổng tiền', 'VAT', 'Tiền phải trả', 'Ngày in' ]
+    
+    # generate bill from pre-paid bill 
     dataPhieuTT = []
     for row in dataPhieuThue:
         index = dataPhieuThue.index(row)
@@ -1183,8 +1301,6 @@ def genRight(s, includeSearch):
             isFound = False
             for r2 in tmpnvTbl:
                 if (r2[0] == r1[2]):
-                    # print(r1)
-                    # print(r2)
                     r1[3] = r2[1] + r2[2]
                     isFound = True
             if (not isFound):
@@ -1208,11 +1324,11 @@ def genRight(s, includeSearch):
     # rSh.set_cell_data(0, 0, value = 999, set_copy = True, redraw = False)
     rSh.set_all_cell_sizes_to_text(redraw = True)
     rSh.enable_bindings('all')
-    rSh.place(x=340, y=200)
-
-
+    rSh.place(x=340, y=180)
 
 def genBotBut(strTable):
+    global chungTaDangODau
+    chungTaDangODau = strTable
     with open('./json/data.json', 'r', encoding='utf-8') as fo:
         dataRead = json.loads(fo.read())
     dataTbl4GenRight = json.dumps(dataRead[strTable], ensure_ascii=False)
@@ -1229,7 +1345,6 @@ def genBotBut(strTable):
         width = 7
     )
     def printSelectedRow():
-        # print(strTable)
         data2Print = []
         if (strTable != 'phieuThanhToan'):
             messagebox.showwarning(title='Cảnh báo', message='Tính năng không khả dụng. Vui lòng chọn mục Hóa đơn để in.')
@@ -1238,8 +1353,10 @@ def genBotBut(strTable):
         try:
             if (a[0] == 'row'):
                 data2Print = dataTblList[a[1]]
+                index = a[1]
             else:
                 data2Print = dataTblList[a[0]]
+                index = a[0]
         except (IndexError):
             messagebox.showwarning(title = 'Cảnh báo', message = 'Vui lòng chọn hàng cần xuất.')
 
@@ -1268,8 +1385,8 @@ def genBotBut(strTable):
         pdf.cell(100, 10, 'Nhân viên: ' + data2Print[3], 'L', )
         pdf.cell(100, 10, 'In lúc:' + datetime.now().strftime("%H:%M:%S"), 'R')
         pdf.ln(5)
-        pdf.cell(100, 10, 'Ngày ở: ' , 'L')
-        pdf.cell(100, 10, 'Ngày đi: ' , 'R')
+        pdf.cell(100, 10, 'Ngày ở: ' + str(dataPhieuThue[index][4]) , 'L')
+        pdf.cell(100, 10, 'Ngày đi: ' + str(dataPhieuThue[index][5]) , 'R')
         pdf.ln(10)
 
         pdf.set_left_margin(40)
@@ -1290,7 +1407,7 @@ def genBotBut(strTable):
         pdf.cell(0, 10, 'Tổng tiền: ' + str(data2Print[7]), 'L')
         pdf.ln(10)
         
-        pdf.output('output.pdf', 'F')
+        pdf.output('bill.pdf', 'F')
        
     exportBotBut = Button(
         dashbrd,
@@ -1299,7 +1416,7 @@ def genBotBut(strTable):
         bg = 'white',
         border = '1px solid black',
         height = 1,
-        width = 10,
+        width = 15,
         command = printSelectedRow
     )
 
@@ -1329,9 +1446,9 @@ def genBotBut(strTable):
     toRenderHeader2 = []
     toRenderHeader3 = []
     toRenderHeader4 = []
-    sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao')
-    sAdTextLbl2 = Label(dashbrd, text = 'Từ')
-    sAdTextLbl3 = Label(dashbrd, text = 'Đến')
+    sAdTextLbl1 = Label(dashbrd, text = 'Tìm kiếm nâng cao', bg = 'white')
+    sAdTextLbl2 = Label(dashbrd, text = 'Từ', bg = 'white')
+    sAdTextLbl3 = Label(dashbrd, text = 'Đến', bg = 'white')
 
     selected0 = StringVar()
     sortBut1 = ttk.Combobox(
@@ -1567,7 +1684,30 @@ def genBotBut(strTable):
                     '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
                 )
             con.commit()
-        elif (strTable == 'phieuThanhToan'):
+        elif (strTable == 'phong'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+                + strTable
+                + '''    
+                    (id text, 
+                    price int,
+                    status text,
+                    level text,
+                    descript text,
+                    items text
+                )'''
+            )
+            for row in new_table:
+                cur.execute('''
+                    INSERT INTO {}
+                    VALUES ('{}',{}, '{}', '{}', '{}', '{}')
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5])
+                )
+            con.commit()
+        elif (strTable == 'nhanVien'):
             try:
                 cur.execute('drop table '+strTable)
             except sqlite3.OperationalError:
@@ -1576,29 +1716,101 @@ def genBotBut(strTable):
             + strTable
             + '''    
                 (id text, 
-                iddv text,
-                idnv text,
-                tennv text,
-                songayo int,
-                tongtien int,
-                vat real,
-                tienphaitra real,
-                ngayin text
+                ho text,
+                ten text,
+                gender text,
+                year int,
+                quequan text,
+                chucvu text,
+                tochuc text,
+                luong int,
+                thuong int
             )''')
             for row in new_table:
                 cur.execute(
                     '''
                     INSERT INTO {}
-                    VALUES ('{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                    VALUES ('{}', '{}', '{}', '{}', {}, '{}', '{}', '{}', {}, {})
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+                )
+            con.commit()
+        elif (strTable == 'khachHang'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''    
+                (id text, 
+                ho text,
+                ten text,
+                gender text,
+                year int,
+                diachi text,
+                cmnd int,
+                quoctich text,
+                gmail text,
+                sdt text
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', '{}', '{}', {}, '{}', {}, '{}', '{}', '{}')
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+                )
+            con.commit()
+        elif (strTable == 'dichVu'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''    
+                (id text, 
+                ten text,
+                price int
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', {})
+                    '''.format(strTable, row[0], row[1], row[2])
+                )
+            con.commit()
+        elif (strTable == 'pNhapTbiAndFood'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''    
+                (id text, 
+                idfood text,
+                ten text,
+                sl int,
+                idncc text,
+                ncc text,
+                idnv text,
+                price int,
+                date text
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}', {}, '{}')
                     '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
                 )
             con.commit()
-
         cur.execute('''
                     SELECT * FROM {}
                 '''.format(strTable))
-        print(cur.fetchall())
-        print('db commited')
+        # print(cur.fetchall())
 
         return
 
@@ -1608,20 +1820,22 @@ def genBotBut(strTable):
     saveBotBut.bind("<Button-1>", parseAndSave)
     # end binding
 
-    saveBotBut.place(x=800, y=630)
+    saveBotBut.place(x=750, y=630)
     exportBotBut.place(x=900, y=630)
-    sortBut1.place(x=650, y=130)
-    sortBut2.place(x=780, y=130)
-    lblSrh1.place(x=555, y=130)
-    lblSrh2.place(x=1095, y= 165)
-    srhBox1.place(x=390, y=132.5)
-    sAdTextLbl1.place(x=340, y=170)
-    sAdTextLbl2.place(x=845, y=170)
-    sAdTextLbl3.place(x=975, y=170)
-    sAdLbl1.place(x=615, y =170)
-    sAdLbl2.place(x=745, y =170)
-    sAdLbl3.place(x=745+130, y =170)
-    sAdLbl4.place(x=745+260, y =170)
+
+    srhBox1.place(x=390, y=110)
+    lblSrh1.place(x=555, y=105)
+    sortBut1.place(x=625, y=110)
+    sortBut2.place(x=780, y=110)
+
+    sAdTextLbl1.place(x=340, y=150)
+    sAdTextLbl2.place(x=845, y=150)
+    sAdTextLbl3.place(x=975, y=150)
+    sAdLbl1.place(x=475, y =150)
+    sAdLbl2.place(x=650, y =150)
+    sAdLbl3.place(x=745+130, y =150)
+    sAdLbl4.place(x=745+260, y =150)
+    lblSrh2.place(x=1095, y= 150)
 
 
 
@@ -1748,27 +1962,27 @@ class loginUI():
 
 
 
-# myLoginUI = loginUI(1024, 576 , 150, 75)
-# myLoginUI.renderFrame()
+myLoginUI = loginUI(1024, 576 , 150, 75)
+myLoginUI.renderFrame()
 
 
 
-# if (loggedIn):
-dashbrd = Tk()
-global icoAdd
-rawIcoAdd = Image.open('./img/add.png')
-rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
-icoAdd = ImageTk.PhotoImage(rawIcoAdd)
-# startAutoSave()
-# startKeyListener()
-genDashUI()
-genNav()
-# genTopBanner()
-genRight('phieuThue', False)
-genBotBut('phieuThue')
-dashbrd.mainloop()
-winClosed = True
-# listener.join()
+if (loggedIn):
+    dashbrd = Tk()
+    global icoAdd
+    rawIcoAdd = Image.open('./img/add.png')
+    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
+    # startAutoSave()
+    # startKeyListener()
+    genDashUI()
+    genNav()
+    # genTopBanner()
+    genRight('phieuThue', False)
+    genBotBut('phieuThue')
+    dashbrd.mainloop()
+    winClosed = True
+    # listener.join()
 
 con.close()
 
