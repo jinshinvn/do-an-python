@@ -1,28 +1,10 @@
-from tkinter import *
-from tkcalendar import Calendar
- 
-# Create Object
-root = Tk()
- 
-# Set geometry
-root.geometry("400x400")
- 
-# Add Calendar
-cal = Calendar(root, selectmode = 'day',
-               year = 2020, month = 5,
-               day = 22)
- 
-cal.pack(pady = 20)
- 
-def grad_date():
-    date.config(text = "Selected Date is: " + cal.get_date())
- 
-# Add Button and Label
-Button(root, text = "Get Date",
-       command = grad_date).pack(pady = 20)
- 
-date = Label(root, text = "")
-date.pack(pady = 20)
- 
-# Execute Tkinter
-root.mainloop()
+import sqlite3
+con = sqlite3.connect('example.db')
+cur = con.cursor()
+cur.execute('''DROP TABLE stocks''')
+cur.execute('''CREATE TABLE stocks (date text, trans text, symbol text, qty real, price real)''')
+cur.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
+for row in cur.execute('SELECT * FROM stocks ORDER BY price'):
+    print(row)
+con.commit()
+con.close()

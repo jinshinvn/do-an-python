@@ -8,10 +8,12 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter import Checkbutton
 from tkinter import Text
-from tkcalendar import Calendar
+from tkinter import PhotoImage
 from tkinter import Toplevel
 from tkinter import Radiobutton
-from turtle import RawTurtle
+from tkinter import Entry
+# from turtle import RawTurtle
+from tkcalendar import Calendar
 from fpdf import FPDF
 from datetime import date
 from datetime import datetime
@@ -25,6 +27,11 @@ from PIL import ImageTk, Image
 import json
 import threading
 import time
+import sqlite3
+import hashlib
+
+# genRight if includeSearch = False: load data from local json
+# genRight if includeSearch = True: don't load data from local json
 
 isSaved = True
 cfg_radius = 60
@@ -39,10 +46,33 @@ navWidth = appWidth/4
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 tabSel = [True, False, False, False, False, False, False]
+con = sqlite3.connect('example.db')
 
+phieuNhapTbAndFood = [
+    ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
+    ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
+    ['P003','H003', 'Bia Sài Gòn', '1000', 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/3/2022'],
+    ['P004','H004', 'Trái cây', '20', 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/3/2022'],
+    ['P005','H005', 'Khăn lạnh', '1000', 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/3/2022'],
+    ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
+    ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
+]
+dataDv = [
+    ['DV001', 'Xông hơi', 250000],
+    ['DV002', 'Massage', 500000],
+    ['DV003', 'Tắm hồ bơi', 200000],
+    ['DV004', 'Giặt ủi', 50000],
+    ['DV005', 'Ăn sáng', 500000],
+    ['DV006', 'Ăn trưa', 250000],
+    ['DV007', 'Ăn tối', 250000]
+]
 dataPhieuThue = [
-    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '31/12/2021', False, 0, 0, 0, 'A101'],
-    ['PTP0002', 'KH002', 'M001', 'DV002', '08/01/2021', '17/02/2022', False, 0, 0, 0, 'A102']
+    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
+    ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
+    ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
+    ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
+    ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
+    ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
 ]
 dataNv = [
     ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', inf, inf],
@@ -70,15 +100,24 @@ dataNv = [
     ['K002', 'Trần Phùng ', 'Thọ', 'Nam', 1998, 'TP.HCM', 'Nhân viên', 'Kho vận', 7000000, 600000]
 ]
 dataPh = [
-        ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-        ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
-        ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
-        ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
-        ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
-    ]
-    
+    ['A101', '500000', 'available', 'Phòng thường 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+    ['A102', '800000', 'available', 'Phòng thường 2 giường','normal', "['2 giường', '1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']'"],
+    ['B202', '1000000', 'available', 'Phòng cao cấp 1 giường','elite', "['1 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+    ['B201', '1200000', 'available', 'Phòng thường 2 giường','elite', "['2 giường', '1 tu lanh lon', '2 bo ban ghe ', '1 may lanh', '4 den', '1 bon tam']"],
+    ['C301', '3000000', 'available', 'Phòng thượng hạng 1 giường','vip', "['1 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+    ['C303', '3200000', 'occupied', 'Phòng thượng hạng 2 giường','vip',"['2 giường', '1 tu lanh lon', '3 bo ban ghe ', '2 may lanh', '6 den', '1 bon tam', 'dien thoai', 'quay bep  + minibar']"],
+    ['A103', '600000', 'maintaining', 'Phòng thườnng 1 giường','normal', "['1 giường', ' 1 tu lanh nho', '1 bo ban ghe', '1 may lanh', '2 den']"],
+]
+dataKh = [
+    ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
+    ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
+    ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
+    ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
+    ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
+    ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
+    ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
+]
+
 def genNav():
     
     lftNavDiv = Canvas(
@@ -440,7 +479,7 @@ def genNav():
 
     def renderInpNhanVien(e):
         inpNv = Toplevel(dashbrd)
-        inpNv.title('Nhân viên')
+        inpNv.title(' Thông tin nhân viên')
         inpNv.geometry('700x800')
         lbl1 = Label(inpNv, font = ('Chirp', 10), text = 'ID:')
         lbl2 = Label(inpNv, font = ('Chirp', 10), text = 'Họ')
@@ -514,15 +553,11 @@ def genNav():
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             quitjob()
             genRight('nhanVien', True)
-            return
-        def quitjob():
-            inpNv.destroy()
-            return
+        def quitjob(): inpNv.destroy()
         but1 = Button(inpNv, text='Save', font = ('Chirp', 11), command =  addData)
         but2 = Button(inpNv, text='Cancel', font = ('Chirp', 11), command = quitjob)
         but1.place(x=120, y= 10 + heightSpacing * 10)
         but2.place(x=240, y= 10 + heightSpacing * 10)
-        return
 
     def renderInpPhieuThue(e):
         inpPTP = Toplevel(dashbrd)
@@ -660,6 +695,165 @@ def genNav():
 
         return
 
+    def renderInpKh(e):
+        inpKh = Toplevel(dashbrd)
+        inpKh.title('Thông tin khách hàng')
+        inpKh.geometry('400x380')
+        lbl1 = Label(inpKh, font = ('Chirp', 10), text = 'ID')
+        lbl2 = Label(inpKh, font = ('Chirp', 10), text = 'Họ')
+        lbl3 = Label(inpKh, font = ('Chirp', 10), text = 'Tên')
+        lbl4 = Label(inpKh, font = ('Chirp', 10), text = 'Giới tính')
+        lbl5 = Label(inpKh, font = ('Chirp', 10), text = 'Năm sinh')
+        lbl6 = Label(inpKh, font = ('Chirp', 10), text = 'Địa chỉ')
+        
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+        lbl4.place(x = 10, y = 10 + heightSpacing * 3)
+        lbl5.place(x = 10, y = 10 + heightSpacing * 4)
+        lbl6.place(x = 10, y = 10 + heightSpacing * 5)
+        
+         
+        txt1 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+
+        var = StringVar()
+        gender = ttk.Combobox(inpKh, values = ['Nam', 'Nữ'])
+        txt5 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        txt6 = Text(inpKh, font = ('Chirp', 10), height = 1, width = 40)
+        
+
+        txt1.place(x = 100, y = 10 + heightSpacing * 0)
+        txt2.place(x = 100, y = 10 + heightSpacing * 1)
+        txt3.place(x = 100, y = 10 + heightSpacing * 2)
+        gender.place(x = 100, y = 10 + heightSpacing * 3)
+        txt5.place(x = 100, y = 10 + heightSpacing * 4)
+        txt6.place(x = 100, y = 10 + heightSpacing * 5)
+        
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            tmp.append(gender.get())
+            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(txt6.get("1.0",'end-1c'))
+            global dataKh
+            dataKh.append(tmp)
+            genRight('khachHang', True)
+        def quitjob(): inpKh.destroy()
+
+        but1 = Button(inpKh, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpKh, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 6)
+        but2.place(x=240, y= 10 + heightSpacing * 6)
+        return
+
+    def renderInpDv(e):
+        print('gone 2')
+        inpDv = Toplevel(dashbrd)
+        inpDv.title('Thông tin dịch vụ')
+        inpDv.geometry('400x380')
+        lbl1 = Label(inpDv, font = ('Chirp', 10), text = 'ID')
+        lbl2 = Label(inpDv, font = ('Chirp', 10), text = 'Tên dịch vụ')
+        lbl3 = Label(inpDv, font = ('Chirp', 10), text = 'Chi phí')
+
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+
+        txt1 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpDv, font = ('Chirp', 10), height = 1, width = 40)
+
+        txt1.place(x = 100, y = 10 + heightSpacing * 0)
+        txt2.place(x = 100, y = 10 + heightSpacing * 1)
+        txt3.place(x = 100, y = 10 + heightSpacing * 2)
+
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            global dataDv
+            dataDv.append(tmp)
+            genRight('dichVu', True)
+        def quitjob(): inpDv.destroy()
+        but1 = Button(inpDv, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpDv, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 3)
+        but2.place(x=240, y= 10 + heightSpacing * 3)
+        return
+
+    def renderInpProduct(e):
+        inpPr = Toplevel(dashbrd)
+        inpPr.title(' Thông tin nhân viên')
+        inpPr.geometry('1000x900')
+        lbl1 = Label(inpPr, font = ('Chirp', 10), text = 'ID phiếu')
+        lbl2 = Label(inpPr, font = ('Chirp', 10), text = 'ID hàng hóa')
+        lbl3 = Label(inpPr, font = ('Chirp', 10), text = 'Tên hàng hóa')
+        lbl4 = Label(inpPr, font = ('Chirp', 10), text = 'Số lượng')
+        lbl5 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhà cung cấp')
+        lbl6 = Label(inpPr, font = ('Chirp', 10), text = 'Tên nhà cung cấp')
+        lbl7 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhân viên')
+        lbl8 = Label(inpPr, font = ('Chirp', 10), text = 'Phí vận chuyển')
+        lbl9 = Label(inpPr, font = ('Chirp', 10), text = 'Ngày nhập')
+
+        heightSpacing = 50
+        lbl1.place(x = 10, y = 10 + heightSpacing * 0)
+        lbl2.place(x = 10, y = 10 + heightSpacing * 1)
+        lbl3.place(x = 10, y = 10 + heightSpacing * 2)
+        lbl4.place(x = 10, y = 10 + heightSpacing * 3)
+        lbl5.place(x = 10, y = 10 + heightSpacing * 4)
+        lbl6.place(x = 10, y = 10 + heightSpacing * 5)
+        lbl7.place(x = 10, y = 10 + heightSpacing * 6)
+        lbl8.place(x = 10, y = 10 + heightSpacing * 7)
+        lbl9.place(x = 10, y = 10 + heightSpacing * 8)
+
+        txt1 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt2 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt3 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt4 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt5 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt6 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt7 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt8 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        txt9 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+
+        txt1.place(x = 125, y = 10 + heightSpacing * 0)
+        txt2.place(x = 125, y = 10 + heightSpacing * 1)
+        txt3.place(x = 125, y = 10 + heightSpacing * 2)
+        txt4.place(x = 125, y = 10 + heightSpacing * 3)
+        txt5.place(x = 125, y = 10 + heightSpacing * 4)
+        txt6.place(x = 125, y = 10 + heightSpacing * 5)
+        txt7.place(x = 125, y = 10 + heightSpacing * 6)
+        txt8.place(x = 125, y = 10 + heightSpacing * 7)
+        txt9.place(x = 125, y = 10 + heightSpacing * 8)
+        def addData():
+            tmp = []
+            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt2.get("1.0",'end-1c'))
+            tmp.append(txt3.get("1.0",'end-1c'))
+            tmp.append(txt4.get("1.0",'end-1c'))
+            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(txt6.get("1.0",'end-1c'))
+            tmp.append(txt7.get("1.0",'end-1c'))
+            tmp.append(txt8.get("1.0",'end-1c'))
+            tmp.append(txt9.get("1.0",'end-1c'))
+            global phieuNhapTbAndFood
+            phieuNhapTbAndFood.append(tmp)
+            genRight('pNhapTbiAndFood', True)
+            return
+        def quitjob(): inpPr.destroy()
+        but1 = Button(inpPr, text='Save', font = ('Chirp', 11), command =  addData)
+        but2 = Button(inpPr, text='Cancel', font = ('Chirp', 11), command = quitjob)
+        but1.place(x=120, y= 10 + heightSpacing * 9)
+        but2.place(x=240, y= 10 + heightSpacing * 9)
+        return
+
     refreshBut = Button(dashbrd, text = 'Refresh', bg = 'white')
     refreshBut.place(x = 950, y = 130)
 
@@ -691,7 +885,6 @@ def genNav():
         genRight('phieuThanhToan', False), genBotBut('phieuThanhToan')
         refreshBut.bind("<Button-1>", temp2)
         addBut1.bind("<Button-1>", notavailable)
-
     def temp3(e): 
         global tabSel
         tabSel = [False] * 7
@@ -700,7 +893,6 @@ def genNav():
         genRight('phong', False), genBotBut('phong')
         refreshBut.bind("<Button-1>", temp3)
         addBut1.bind("<Button-1>", renderInpPhong)
-
     def temp4(e): 
         global tabSel
         tabSel = [False] * 7
@@ -709,7 +901,6 @@ def genNav():
         genRight('nhanVien', False), genBotBut('nhanVien')
         refreshBut.bind("<Button-1>", temp4)
         addBut1.bind("<Button-1>", renderInpNhanVien)
-
     def temp5(e): 
         global tabSel
         tabSel = [False] * 7
@@ -717,7 +908,7 @@ def genNav():
         toggleLbl5
         genRight('khachHang', False), genBotBut('khachHang')
         refreshBut.bind("<Button-1>", temp5)
-
+        addBut1.bind("<Button-1>", renderInpKh)
     def temp6(e): 
         global tabSel
         tabSel = [False] * 7
@@ -725,6 +916,7 @@ def genNav():
         toggleLbl6
         genRight('dichVu', False), genBotBut('dichVu')
         refreshBut.bind("<Button-1>", temp6)
+        addBut1.bind("<Button-1>", renderInpDv)
 
     def temp7(e): 
         global tabSel
@@ -733,6 +925,7 @@ def genNav():
         toggleLbl7
         genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
         refreshBut.bind("<Button-1>", temp7)
+        addBut1.bind("<Button-1>", renderInpProduct)
 
     def temp8(e): 
         global tabSel
@@ -884,28 +1077,11 @@ def genRight(s, includeSearch):
     
     global dvHeader
     dvHeader = ['ID', 'Tên dịch vụ', 'Chi phí']
-    dataDv = [
-        ['DV001', 'Xông hơi', 250000],
-        ['DV002', 'Massage', 500000],
-        ['DV003', 'Tắm hồ bơi', 200000],
-        ['DV004', 'Giặt ủi', 50000],
-        ['DV005', 'Ăn sáng', 500000],
-        ['DV006', 'Ăn trưa', 250000],
-        ['DV007', 'Ăn tối', 250000]
-    ]
+    
     global phongHeader
     phongHeader = ['ID', 'Giá phòng', 'Trạng thái', 'Mô tả', 'Kiểu phòng', 'Trang bị']
     
-    global dataKh
-    dataKh = [
-        ['KH001', 'Nguyễn Thế', 'Doanh', 'Nam', 1983, '286 Str. 3/2, Ward 12, Dist', 312509075, 'Việt Nam', '09753650117', 'user01@gmail.com' ],
-        ['KH002', 'Úc Quốc', 'Hải', 'Nam', 1982, ' 95 Nguyen Hong Dao street, Tan Binh District', 312509076, 'Việt Nam', '09753650117', 'user02@gmail.com' ],
-        ['KH003', 'Nguyễn Thiện', 'Ân', 'Nam', 1979, '49 Le Trung Nghia, Ward. 12, Tan Binh District', 312509075, 'Việt Nam', '09753650117', 'user03@gmail.com' ],
-        ['KH004', 'Vương Đăng', 'Đạt', 'Nam', 1982, '128 Tran Quy Cap, Group 4, Ninh Hoa, Khanh Hoa', 312509075, 'Việt Nam', '09753650117', 'user04@gmail.com'],
-        ['KH005', 'Trang Diệu', 'Nương', 'Nữ', 1991, 'Tan Quy Tay Ward, Sa Dec Township', 312509075, 'Việt Nam', '09753650117', 'user05@gmail.com' ],
-        ['KH006', 'Nguyễn Chiêu', 'Dương', 'Nữ', 1998, '659 Xo Viet Nghe Tinh, Binh Thanh District', 312509075, 'Việt Nam', '09753650117', 'user06@gmail.com' ],
-        ['KH007', 'Bùi Thúy', 'Vy', 'Nam', 1991, '39A/3 Kha Van Can Street, Hiep Binh Chanh Ward, Thu Duc District', 312509075, 'Việt Nam', '09753650117', 'user07@gmail.com' ],
-    ]
+    
     global ptpHeader
     ptpHeader = ["ID Phiếu", "ID Khách hàng", "ID Nhân viên", "Danh sách dịch vụ", "Ngày ở", "Ngày đến", "Trả trước", "Tiền thuê", "Phí dịch vụ", "Tổng tiền", "ID Phòng"]
     
@@ -953,17 +1129,6 @@ def genRight(s, includeSearch):
         dataPhieuThue[index][9] = rentFee + serviceFee
 
         dataPhieuTT.append(tmp)
-        
-    
-    phieuNhapTbAndFood = [
-        ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
-        ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
-        ['P003','H003', 'Bia Sài Gòn', '1000', 'NCC003', 'Nhà cung cấp 3', 'NV01', 500000, '12/3/2022'],
-        ['P004','H004', 'Trái cây', '20', 'NCC004', 'Nhà cung cấp 4', 'NV01', 100000, '14/3/2022'],
-        ['P005','H005', 'Khăn lạnh', '1000', 'NCC005', 'Nhà cung cấp 5', 'NV01', 100000, '19/3/2022'],
-        ['P006','H006', 'Thực phẩm', '20', 'NCC006', 'Nhà cung cấp 6', 'NV02', 200000, '21/3/2022'],
-        ['P007','H007', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 7', 'NV01', 500000, '25/3/2022'],
-    ]
     
     dct = {
         'nhanVien': dataNv,
@@ -1076,10 +1241,10 @@ def genBotBut(strTable):
         pdf = FPDF()
         pdf.alias_nb_pages()
         pdf.add_page()
-        pdf.add_font("NotoSans", style="", fname="NotoSans-Regular.ttf", uni=True)
-        pdf.add_font("NotoSans", style="B", fname="NotoSans-Bold.ttf", uni=True)
-        pdf.add_font("NotoSans", style="I", fname="NotoSans-Italic.ttf", uni=True)
-        pdf.add_font("NotoSans", style="BI", fname="NotoSans-BoldItalic.ttf", uni=True)
+        pdf.add_font("NotoSans", style="", fname="./fonts/NotoSans-Regular.ttf", uni=True)
+        pdf.add_font("NotoSans", style="B", fname="./fonts/NotoSans-Bold.ttf", uni=True)
+        pdf.add_font("NotoSans", style="I", fname="./fonts/NotoSans-Italic.ttf", uni=True)
+        pdf.add_font("NotoSans", style="BI", fname="./fonts/NotoSans-BoldItalic.ttf", uni=True)
         
         pdf.set_font("NotoSans", style="B", size=12)
         pdf.cell(0, 15, 'KHÁCH SẠN GRAND HOTEL', 0, 1, 'C')
@@ -1119,7 +1284,6 @@ def genBotBut(strTable):
         pdf.ln(10)
         pdf.cell(0, 10, 'Tổng tiền: ' + str(data2Print[7]), 'L')
         pdf.ln(10)
-
         
         pdf.output('output.pdf', 'F')
        
@@ -1339,9 +1503,47 @@ def genBotBut(strTable):
             genRight(strTable, True)
         return
 
+    def parseAndSave(e):
+        new_table = rSh.get_sheet_data(False, False, False)
+        print(strTable)
+        cur = con.cursor()
+        cur.execute('drop table '+strTable)
+        cur.execute('''CREATE TABLE  '''
+        + strTable
+        + '''    
+            (id text, 
+            idkh text,
+            idnv text,
+            iddv text,
+            ngayden text,
+            ngaydi text,
+            tratruoc bool,
+            thanhtien real,
+            vat real,
+            tongtien real,
+            idphong text
+            
+        )''')
+        for row in new_table:
+            cur.execute(
+                '''
+                INSERT INTO {}
+                VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], str(row[6]), row[7], row[8], row[9], row[10])
+            )
+        con.commit()
+        cur.execute('''
+            SELECT * FROM phieuThue
+        ''')
+        print(cur.fetchall())
+        print('db commited')
+
+        return
+
     sAdLbl1.bind("<<ComboboxSelected>>", tmp1)
     sAdLbl2.bind("<<ComboboxSelected>>", tmp2)
     sortBut2.bind("<<ComboboxSelected>>", tmp3)
+    saveBotBut.bind("<Button-1>", parseAndSave)
     # end binding
 
     saveBotBut.place(x=800, y=630)
@@ -1361,22 +1563,155 @@ def genBotBut(strTable):
 
 
 
-dashbrd = Tk()
 
-global icoAdd
-rawIcoAdd = Image.open('./img/add.png')
-rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
-icoAdd = ImageTk.PhotoImage(rawIcoAdd)
-# startAutoSave()
-# startKeyListener()
-genDashUI()
-genNav()
-# genTopBanner()
-genRight('phieuThue', False)
-# toRenderHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
-genBotBut('phieuThue')
-dashbrd.mainloop()
-winClosed = True
-# listener.join()
+
+
+
+loggedIn = False
+
+def getUsernameAndLogin(event=None):
+    username = entryLogin.get() 
+    password = entryPassword.get()
+    passwordHashed = hashlib.sha256(password.encode()).hexdigest()
+    with open('./json/userData.json', encoding='utf8') as userDataJsonFile:
+        tempDict = json.load(userDataJsonFile)
+    if (tempDict.get(username) == passwordHashed):
+        global loggedIn
+        loggedIn = True
+        messagebox.showwarning(title=None, message = 'Login thành công. Thoát cửa sổ đăng nhập để hiển thị thanh điều khiển.')
+
+    else:
+        labelImgNotify.place(x=725, y=2.5)
+        th_popUpWrongCredentialsLogin()
+    return
+
+def popUpWrongCredentialsLogin():
+    time.sleep(2)
+    labelImgNotify.place_forget()
+    return
+
+def th_popUpWrongCredentialsLogin():
+    thread = threading.Thread(target=popUpWrongCredentialsLogin)
+    thread.start()
+    return
+class loginUI():
+    def __init__(self, width, height, xaxis, yaxis):
+        global loginFrame
+        loginFrame = Tk()
+        loginFrame.title('Đăng nhập cùng chúng tôi')
+        loginFrame.iconbitmap('login.ico')
+        loginFrame.configure(bg='white')
+        self.width = width
+        self.height = height
+        self.xaxis = xaxis
+        self.yaxis = yaxis
+    def renderFrame(self):
+        temp = str(self.width) + 'x' + str(self.height) + '+' + str(self.xaxis) + '+' +  str(self.yaxis)
+        loginFrame.geometry(temp)
+
+        imgIllus = PhotoImage(file = './img/undraw1.png')
+        labelIllus = Label(loginFrame, image = imgIllus, bg='white')
+        labelIllus.place(x=100, y=100)
+
+        labelTitle = Label(
+            loginFrame, 
+            text = "ĐĂNG NHẬP", 
+            font= ('Times New Roman', 24), 
+            foreground= "blue3",
+            bg='white'
+        )
+        labelTitle.place(x=675, y=90)
+
+        emailPassEntryWidth = 30
+        emailPassEntryHeight = 35
+
+        labelLogin = Label(
+            loginFrame, 
+            text = "Email: ", 
+            font= ('Times New Roman', 14), 
+            foreground= "black",
+            bg = 'white'
+        )
+        labelLogin.place(x=625, y=150)
+        
+        global entryLogin
+        entryLogin = Entry(
+            loginFrame, 
+            borderwidth=2,
+            font= ('Times New Roman', 14), 
+            width=emailPassEntryWidth,
+
+        )
+        entryLogin.place(x=625, y=200, height=emailPassEntryHeight)
+            
+        labelPassword = Label(
+            loginFrame, 
+            text = "Mật khẩu: ", 
+            font= ('Times New Roman', 14),
+            foreground= "black",
+            bg = 'white',
+        )
+        labelPassword.place(x=625, y=250)
+        
+        global entryPassword
+        entryPassword = Entry(
+            loginFrame, 
+            show = '*', 
+            borderwidth=2,
+            font= ('Times New Roman', 14), 
+            width=emailPassEntryWidth
+        )
+        entryPassword.place(x=625, y=300, height=emailPassEntryHeight)
+
+        rememberMe = Checkbutton(
+            loginFrame, 
+            text='Lưu phiên đăng nhập',
+            bg='white'
+        )
+        rememberMe.place(x=690, y=430)
+        
+        imgLoginBut = PhotoImage(file = './img/login.png')
+        labelLoginBut = Label(loginFrame, image = imgLoginBut, bg='white')
+        labelLoginBut.bind('<Button-1>', getUsernameAndLogin)
+        bindedBut = Button(loginFrame, image=imgLoginBut, command=getUsernameAndLogin)
+        labelLoginBut.place(x=665, y=370)
+
+        # i don't know why it ran perfectly
+        # Source: https://stackoverflow.com/questions/40658728/clickable-images-for-python
+        
+        global img
+        global labelImgNotify
+        img = PhotoImage(file = './img/vnwronglogin.png')
+        labelImgNotify = Label(loginFrame, image = img, bg='white')
+
+        loginFrame.mainloop()
+
+
+
+
+
+myLoginUI = loginUI(1024, 576 , 150, 75)
+myLoginUI.renderFrame()
+
+
+
+if (loggedIn):
+    dashbrd = Tk()
+    global icoAdd
+    rawIcoAdd = Image.open('./img/add.png')
+    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
+    # startAutoSave()
+    # startKeyListener()
+    genDashUI()
+    genNav()
+    # genTopBanner()
+    genRight('phieuThue', False)
+    genBotBut('phieuThue')
+    dashbrd.mainloop()
+    winClosed = True
+    # listener.join()
+
+    con.close()
 
 
