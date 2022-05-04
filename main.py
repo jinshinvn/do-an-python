@@ -1565,15 +1565,21 @@ def genBotBut(strTable):
 
 
 
+
+
+loggedIn = False
+
 def getUsernameAndLogin(event=None):
     username = entryLogin.get() 
     password = entryPassword.get()
     passwordHashed = hashlib.sha256(password.encode()).hexdigest()
     with open('./json/userData.json', encoding='utf8') as userDataJsonFile:
         tempDict = json.load(userDataJsonFile)
-    if (tempDict.get(username)==passwordHashed):
-        messagebox.showwarning(title=None, message = 'Login thành công.')
-        
+    if (tempDict.get(username) == passwordHashed):
+        global loggedIn
+        loggedIn = True
+        messagebox.showwarning(title=None, message = 'Login thành công. Thoát cửa sổ đăng nhập để hiển thị thanh điều khiển.')
+
     else:
         labelImgNotify.place(x=725, y=2.5)
         th_popUpWrongCredentialsLogin()
@@ -1588,7 +1594,6 @@ def th_popUpWrongCredentialsLogin():
     thread = threading.Thread(target=popUpWrongCredentialsLogin)
     thread.start()
     return
-
 class loginUI():
     def __init__(self, width, height, xaxis, yaxis):
         global loginFrame
@@ -1600,7 +1605,6 @@ class loginUI():
         self.height = height
         self.xaxis = xaxis
         self.yaxis = yaxis
-
     def renderFrame(self):
         temp = str(self.width) + 'x' + str(self.height) + '+' + str(self.xaxis) + '+' +  str(self.yaxis)
         loginFrame.geometry(temp)
@@ -1682,26 +1686,32 @@ class loginUI():
 
         loginFrame.mainloop()
 
+
+
+
+
 myLoginUI = loginUI(1024, 576 , 150, 75)
 myLoginUI.renderFrame()
 
-dashbrd = Tk()
 
-global icoAdd
-rawIcoAdd = Image.open('./img/add.png')
-rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
-icoAdd = ImageTk.PhotoImage(rawIcoAdd)
-# startAutoSave()
-# startKeyListener()
-genDashUI()
-genNav()
-# genTopBanner()
-genRight('phieuThue', False)
-genBotBut('phieuThue')
-dashbrd.mainloop()
-winClosed = True
-# listener.join()
 
-con.close()
+if (loggedIn):
+    dashbrd = Tk()
+    global icoAdd
+    rawIcoAdd = Image.open('./img/add.png')
+    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
+    # startAutoSave()
+    # startKeyListener()
+    genDashUI()
+    genNav()
+    # genTopBanner()
+    genRight('phieuThue', False)
+    genBotBut('phieuThue')
+    dashbrd.mainloop()
+    winClosed = True
+    # listener.join()
+
+    con.close()
 
 
