@@ -80,8 +80,6 @@ class loginUI():
 
         )
         entryLogin.place(x=625, y=200, height=emailPassEntryHeight)
-
-        
             
         labelPassword = Label(
             loginFrame, 
@@ -117,24 +115,7 @@ class loginUI():
 
         # i don't know why it ran perfectly
         # Source: https://stackoverflow.com/questions/40658728/clickable-images-for-python
-
-        labelNoAcc = Label(
-            loginFrame, 
-            text='Chưa có tài khoản?   xxxx xx ngay!',
-            bg='white',
-            font= ('Times New Roman italic', 13)
-        )
-        labelNoAcc.place(x=640, y=470)
         
-        registerButton = Button(
-            loginFrame, 
-            text='Đăng ký',
-            bg='white',
-            borderwidth=0,
-            font= ('Times New Roman italic', 13, 'underline')
-        )
-        registerButton.place(x=780, y=467)
-
         global img
         global labelImgNotify
         img = PhotoImage(file = './img/vnwronglogin.png')
