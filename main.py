@@ -43,11 +43,26 @@ appWidth = 1200
 appHeight = 768
 appIco = ''
 navWidth = appWidth/4
+
 heightLineNav = appHeight/3
 lblNavX = navWidth/5*2+10
 tabSel = [True, False, False, False, False, False, False]
-con = sqlite3.connect('example.db')
 
+con = sqlite3.connect('example.db')
+# curGlobal = con.cursor()
+# curGlobal.execute('''
+#             SELECT * FROM phieuThue
+#         ''')
+# print(curGlobal.fetchall())
+
+dataPhieuThue = [
+    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
+    ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
+    ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
+    ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
+    ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
+    ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
+]
 phieuNhapTbAndFood = [
     ['P001','H001', 'Coca-cola lon', '1000', 'NCC001', 'Nhà cung cấp 1', 'NV01', 500000, '10/3/2022'],
     ['P002','H002', 'Pepsi lon', '1000', 'NCC002', 'Nhà cung cấp 2', 'NV01', 500000, '11/3/2022'],
@@ -65,14 +80,6 @@ dataDv = [
     ['DV005', 'Ăn sáng', 500000],
     ['DV006', 'Ăn trưa', 250000],
     ['DV007', 'Ăn tối', 250000]
-]
-dataPhieuThue = [
-    ['PTP0001', 'KH001', 'M001', 'DV001', '20/10/2021', '25/10/2021', False, 0, 0, 0, 'A101'],
-    ['PTP0002', 'KH002', 'M001', 'DV002', '30/01/2022', '17/02/2022', False, 0, 0, 0, 'A102'],
-    ['PTP0003', 'KH001', 'M002', 'DV003', '18/06/2015', '28/06/2015', True, 0, 0, 0, 'A102'],
-    ['PTP0004', 'KH003', 'M002', 'DV008', '08/01/2016', '17/02/2016', False, 0, 0, 0, 'B202'],
-    ['PTP0005', 'KH004', 'M002', 'DV008', '08/01/2018', '17/02/2018', True, 0, 0, 0, 'B202'],
-    ['PTP0006', 'KH006', 'M001', 'DV004', '08/01/2019', '17/02/2019', False, 0, 0, 0, 'B202'],
 ]
 dataNv = [
     ['B001', 'Trịnh Quang', 'Hòa', 'Nam', 1979, 'TP.HCM', 'CEO', 'Hội đồng quản trị', inf, inf],
@@ -1156,8 +1163,6 @@ def genRight(s, includeSearch):
     nvHeader = ["ID", "Họ", "Tên", "Giới tính", "Năm sinh", "Quê quán", "Chức vụ", "Bộ phận", "Lương", "Thưởng"]
     global khHeader
     khHeader = ['ID', 'Họ', 'Tên', 'Giới tính', 'Năm sinh', 'Địa chỉ', 'Số CMND/CDDD', 'Quốc tịch', 'Số điện thoại', 'Email']
-    
-    
     global pnHeader
     pnHeader = ['ID phiếu', 'ID Hàng hóa', 'Tên hàng hóa', 'Số lượng', 'ID nhà cung cấp', 'Tên nhà cung cấp', 'ID nhân viên', 'Phí vận chuyển', 'Ngày nhập']
     
@@ -1505,36 +1510,93 @@ def genBotBut(strTable):
 
     def parseAndSave(e):
         new_table = rSh.get_sheet_data(False, False, False)
-        print(strTable)
+        # print(strTable)
         cur = con.cursor()
-        cur.execute('drop table '+strTable)
-        cur.execute('''CREATE TABLE  '''
-        + strTable
-        + '''    
-            (id text, 
-            idkh text,
-            idnv text,
-            iddv text,
-            ngayden text,
-            ngaydi text,
-            tratruoc bool,
-            thanhtien real,
-            vat real,
-            tongtien real,
-            idphong text
-            
-        )''')
-        for row in new_table:
-            cur.execute(
-                '''
-                INSERT INTO {}
-                VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
-                '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], str(row[6]), row[7], row[8], row[9], row[10])
-            )
-        con.commit()
+
+        if (strTable == 'phieuThue'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''
+                (id text, 
+                idkh text,
+                idnv text,
+                iddv text,
+                ngayden text,
+                ngaydi text,
+                tratruoc bool,
+                thanhtien real,
+                vat real,
+                tongtien real,
+                idphong text
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], str(row[6]), row[7], row[8], row[9], row[10])
+                )
+            con.commit()
+        elif (strTable == 'phieuThanhToan'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''    
+                (id text, 
+                iddv text,
+                idnv text,
+                tennv text,
+                songayo int,
+                tongtien int,
+                vat real,
+                tienphaitra real,
+                ngayin text
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+                )
+            con.commit()
+        elif (strTable == 'phieuThanhToan'):
+            try:
+                cur.execute('drop table '+strTable)
+            except sqlite3.OperationalError:
+                pass
+            cur.execute('''CREATE TABLE  '''
+            + strTable
+            + '''    
+                (id text, 
+                iddv text,
+                idnv text,
+                tennv text,
+                songayo int,
+                tongtien int,
+                vat real,
+                tienphaitra real,
+                ngayin text
+            )''')
+            for row in new_table:
+                cur.execute(
+                    '''
+                    INSERT INTO {}
+                    VALUES ('{}', '{}', '{}', '{}', {}, {}, {}, {}, '{}')
+                    '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+                )
+            con.commit()
+
         cur.execute('''
-            SELECT * FROM phieuThue
-        ''')
+                    SELECT * FROM {}
+                '''.format(strTable))
         print(cur.fetchall())
         print('db commited')
 
@@ -1587,7 +1649,10 @@ def getUsernameAndLogin(event=None):
 
 def popUpWrongCredentialsLogin():
     time.sleep(2)
-    labelImgNotify.place_forget()
+    try:
+        labelImgNotify.place_forget()
+    except Exception:
+        print('nothing')
     return
 
 def th_popUpWrongCredentialsLogin():
@@ -1663,13 +1728,6 @@ class loginUI():
         )
         entryPassword.place(x=625, y=300, height=emailPassEntryHeight)
 
-        rememberMe = Checkbutton(
-            loginFrame, 
-            text='Lưu phiên đăng nhập',
-            bg='white'
-        )
-        rememberMe.place(x=690, y=430)
-        
         imgLoginBut = PhotoImage(file = './img/login.png')
         labelLoginBut = Label(loginFrame, image = imgLoginBut, bg='white')
         labelLoginBut.bind('<Button-1>', getUsernameAndLogin)
@@ -1690,28 +1748,28 @@ class loginUI():
 
 
 
-myLoginUI = loginUI(1024, 576 , 150, 75)
-myLoginUI.renderFrame()
+# myLoginUI = loginUI(1024, 576 , 150, 75)
+# myLoginUI.renderFrame()
 
 
 
-if (loggedIn):
-    dashbrd = Tk()
-    global icoAdd
-    rawIcoAdd = Image.open('./img/add.png')
-    rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
-    icoAdd = ImageTk.PhotoImage(rawIcoAdd)
-    # startAutoSave()
-    # startKeyListener()
-    genDashUI()
-    genNav()
-    # genTopBanner()
-    genRight('phieuThue', False)
-    genBotBut('phieuThue')
-    dashbrd.mainloop()
-    winClosed = True
-    # listener.join()
+# if (loggedIn):
+dashbrd = Tk()
+global icoAdd
+rawIcoAdd = Image.open('./img/add.png')
+rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
+icoAdd = ImageTk.PhotoImage(rawIcoAdd)
+# startAutoSave()
+# startKeyListener()
+genDashUI()
+genNav()
+# genTopBanner()
+genRight('phieuThue', False)
+genBotBut('phieuThue')
+dashbrd.mainloop()
+winClosed = True
+# listener.join()
 
-    con.close()
+con.close()
 
 
