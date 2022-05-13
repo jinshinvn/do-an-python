@@ -1043,10 +1043,11 @@ def genNav():
             label.append(row[2])
         ax.pie(percent) 
         ax.legend(label)
-        circle=matplotlib.patches.Circle( (0,0), 0.7, color='white')
+        circle=matplotlib.patches.Circle((0,0), 0.7, color='white')
         ax.add_artist(circle)
 
         thongke = Toplevel(dashbrd)
+        thongke.title('Thống kê cơ cấu số lượng sản phầm tồn kho')
         canvas = FigureCanvasTkAgg(fig, master = thongke)
         canvas.get_tk_widget().pack()
         canvas.draw()
@@ -1184,18 +1185,28 @@ def genDashUI():
     dashbrd.title('Dashboard')
     dashbrd.iconbitmap(appIco)
     dashbrd.configure(bg='white')
+
     tmp = str(appWidth) + 'x' + str(appHeight) + '+' + str(60) + '+' + str(0)
     dashbrd.geometry(tmp)
     dashbrd.resizable(False, False)
 
 
 def genTopBanner():
-    global topimg
-    rawtopimg = Image.open('./img/hotel.jpg')
-    rawtopimg = rawtopimg.resize((600, 200), Image.Resampling.LANCZOS)
-    topimg = ImageTk.PhotoImage(rawtopimg)
-    lblTopImg = Label(dashbrd, image = topimg)
-    lblTopImg.place(x = 0, y = 0, relx = .25, rely = .25)
+
+    # global topimg
+    # rawtopimg = Image.open('./img/hotel.jpg')
+    # rawtopimg = rawtopimg.resize((600, 200), Image.Resampling.LANCZOS)
+    # topimg = ImageTk.PhotoImage(rawtopimg)
+    # lblTopImg = Label(dashbrd, image = topimg)
+    # lblTopImg.place(x = 0, y = 0, relx = .25, rely = .25)
+
+    global hdr_img
+    raw_hdr_img = Image.open('./img/wall.png')
+    raw_hdr_img = raw_hdr_img.resize((900, 787), Image.Resampling.LANCZOS)
+    hdr_img = ImageTk.PhotoImage(raw_hdr_img)
+    lbl_hdr_img = Label(dashbrd, image = hdr_img)
+
+    lbl_hdr_img.place(x = 301, y = 0)
 
 def genRight(s, includeSearch):
     
@@ -1892,6 +1903,13 @@ class loginUI():
         labelIllus = Label(loginFrame, image = imgIllus, bg='white')
         labelIllus.place(x=100, y=100)
 
+        global dn_fr_img
+        raw_dn_fr_img = Image.open('./img/dn.png')
+        raw_dn_fr_img = raw_dn_fr_img.resize((int(544/1.4), int(629/1.4)), Image.Resampling.LANCZOS)
+        dn_fr_img = ImageTk.PhotoImage(raw_dn_fr_img)
+        lbl_dn_fr_img = Label(loginFrame, image = dn_fr_img)
+        lbl_dn_fr_img.place(x = 560, y = 40);
+
         labelTitle = Label(
             loginFrame, 
             text = "ĐĂNG NHẬP", 
@@ -1956,16 +1974,12 @@ class loginUI():
         img = PhotoImage(file = './img/vnwronglogin.png')
         labelImgNotify = Label(loginFrame, image = img, bg='white')
 
+        
+
         loginFrame.mainloop()
-
-
-
-
 
 myLoginUI = loginUI(1024, 576 , 150, 75)
 myLoginUI.renderFrame()
-
-
 
 if (loggedIn):
     dashbrd = Tk()
@@ -1977,7 +1991,7 @@ if (loggedIn):
     # startKeyListener()
     genDashUI()
     genNav()
-    # genTopBanner()
+    genTopBanner()
     genRight('phieuThue', False)
     genBotBut('phieuThue')
     dashbrd.mainloop()
