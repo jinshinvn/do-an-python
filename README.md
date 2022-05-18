@@ -1,3 +1,7 @@
+# Phần mềm quản lý khách sạn
+
+Đồ án công nghệ phần mềm nằm ở link: https://github.com/jinshinvn/doAnCNPM
+
 ## 🔸 Giới thiệu
 
 Đồ án "Quản lý khách sạn" giữa kỳ môn "Lập trình Python" tại trường đại học Sài Gòn
