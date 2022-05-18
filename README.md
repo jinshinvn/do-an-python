@@ -1,6 +1,6 @@
 # Phần mềm quản lý khách sạn
 
-Đồ án công nghệ phần mềm (Quản lý shop cafe) nằm ở link: https://github.com/jinshinvn/doAnCNPM
+**Lưu ý: Đồ án công nghệ phần mềm (Quản lý shop cafe) nằm ở link: https://github.com/jinshinvn/doAnCNPM**
 
 ## 🔸 Giới thiệu
 
