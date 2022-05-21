@@ -1,3 +1,4 @@
+from string import ascii_uppercase
 from tkinter import Tk
 from tkinter import StringVar
 from tkinter import IntVar
@@ -12,6 +13,7 @@ from tkinter import PhotoImage
 from tkinter import Toplevel
 from tkinter import Radiobutton
 from tkinter import Entry
+import openpyxl
 import matplotlib.figure
 import matplotlib.patches
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -22,6 +24,7 @@ from datetime import datetime
 from operator import itemgetter
 from math import inf
 from matplotlib.colors import to_rgba_array
+import pandas
 
 from tksheet import Sheet
 from pynput import keyboard
@@ -91,6 +94,52 @@ phieuNhapTbAndFood = curGlobal.fetchall()
 tmp = []
 for row in phieuNhapTbAndFood: tmp.append(list(row))
 phieuNhapTbAndFood = tmp
+
+def fetchFromDb():
+    curGlobal.execute('''SELECT * FROM phieuThue''')
+    global dataPhieuThue
+    dataPhieuThue = curGlobal.fetchall()
+    tmp = []
+    for row in dataPhieuThue: tmp.append(list(row))
+    dataPhieuThue = tmp
+
+    curGlobal.execute('''SELECT * FROM nhanVien''')
+    global dataNv
+    dataNv = curGlobal.fetchall()
+    tmp = []
+    for row in dataNv: tmp.append(list(row))
+    dataNv = tmp
+
+    curGlobal.execute('''SELECT * FROM phong''')
+    global dataPh
+    dataPh = curGlobal.fetchall()
+    tmp = []
+    for row in dataPh: tmp.append(list(row))
+    dataPh = tmp
+
+    curGlobal.execute('''SELECT * FROM khachHang''')
+    global dataKh
+    dataKh = curGlobal.fetchall()
+    tmp = []
+    for row in dataKh: tmp.append(list(row))
+    dataKh = tmp
+
+    curGlobal.execute('''SELECT * FROM dichVu''')
+    global dataDv
+    dataDv = curGlobal.fetchall()
+    tmp = []
+    for row in dataDv: tmp.append(list(row))
+    dataDv = tmp
+
+    curGlobal.execute('''SELECT * FROM pNhapTbiAndFood''')
+    global phieuNhapTbAndFood
+    phieuNhapTbAndFood = curGlobal.fetchall()
+    tmp = []
+    for row in phieuNhapTbAndFood: tmp.append(list(row))
+    phieuNhapTbAndFood = tmp
+
+    return
+
 
 # initialize database by lists
 # dataPhieuThue = [
@@ -521,8 +570,8 @@ def genNav():
 
     def renderInpNhanVien(e):
         inpNv = Toplevel(dashbrd)
-        inpNv.title(' Thông tin nhân viên')
-        inpNv.geometry('700x800')
+        inpNv.title('Điền thông tin nhân viên mới')
+        inpNv.geometry('650x600')
         lbl1 = Label(inpNv, font = ('Chirp', 10), text = 'ID:')
         lbl2 = Label(inpNv, font = ('Chirp', 10), text = 'Họ')
         lbl3 = Label(inpNv, font = ('Chirp', 10), text = 'Tên')
@@ -545,16 +594,19 @@ def genNav():
         lbl9.place(x = 10, y = 10 + heightSpacing * 8)
         lbl10.place(x = 10, y = 10 + heightSpacing * 9)
          
-        txt1 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
+        txt1Val = "M" + str(len(dataNv)+1).zfill(3)
+        txt1 = Label(inpNv, font = ('Chirp', 10), height = 1, width = 40, text = txt1Val)
         txt2 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
         txt3 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
 
-        var = StringVar()
-        nam = Radiobutton(inpNv, text = "Nam", variable = var, value=1)
-        nu = Radiobutton(inpNv, text = "Nữ", variable = var, value=2)
-        txt5 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
+        genderEntry = ttk.Combobox(inpNv, values = ["Nam", "Nữ"], height = 1, width = 40)
+        yearSample =  [*range(1950, 2020, 1)]
+        txt5 = ttk.Combobox(inpNv, values = yearSample, font = ('Chirp', 10), height = 1, width = 40)
         txt6 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
-        txt7 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
+        jobSample = []
+        for row in dataDv:
+            jobSample.append(row[6])
+        txt7 = ttk.Combobox(inpNv, font = ('Chirp', 10), height = 1, width = 40, values = jobSample)
         txt8 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
         txt9 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
         txt10 = Text(inpNv, font = ('Chirp', 10), height = 1, width = 40)
@@ -562,8 +614,7 @@ def genNav():
         txt1.place(x = 100, y = 10 + heightSpacing * 0)
         txt2.place(x = 100, y = 10 + heightSpacing * 1)
         txt3.place(x = 100, y = 10 + heightSpacing * 2)
-        nam.place(x = 100, y = 10 + heightSpacing * 3)
-        nu.place(x = 200, y = 10 + heightSpacing * 3)
+        genderEntry.place(x = 100, y = 10 + heightSpacing * 3)
         txt5.place(x = 100, y = 10 + heightSpacing * 4)
         txt6.place(x = 100, y = 10 + heightSpacing * 5)
         txt7.place(x = 100, y = 10 + heightSpacing * 6)
@@ -574,16 +625,11 @@ def genNav():
         def addData():
         
             tmp = []
-            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(txt1Val)
             tmp.append(txt2.get("1.0",'end-1c'))
             tmp.append(txt3.get("1.0",'end-1c'))
-            k = var.get()
-            if (k == 1): tmp.append('Nam')
-            else: tmp.append('Nữ')
-            try:
-                tmp.append(int(txt5.get("1.0",'end-1c')))
-            except ValueError:
-                messagebox.showwarning(title='Cảnh báo', message = 'Vui lòng nhập năm sinh bằng số.')
+            tmp.append(genderEntry.get())
+            tmp.append(int(txt5.get()))
             tmp.append(txt6.get("1.0",'end-1c'))
             tmp.append(txt7.get("1.0",'end-1c'))
             tmp.append(txt8.get("1.0",'end-1c'))
@@ -614,7 +660,7 @@ def genNav():
     def renderInpPhieuThue(e):
         inpPTP = Toplevel(dashbrd)
         inpPTP.title('Phiếu thuê phòng')
-        inpPTP.geometry('900x800')
+        inpPTP.geometry('900x575')
         lbl1 = Label(inpPTP, font = ('Chirp', 10), text = 'ID phiếu')
         lbl2 = Label(inpPTP, font = ('Chirp', 10), text = 'ID khách hàng')
         lbl3 = Label(inpPTP, font = ('Chirp', 10), text = 'ID nhân viên')
@@ -633,22 +679,34 @@ def genNav():
         lbl7.place(x = 10, y = 10 + heightSpacing * 8)
         lbl8.place(x = 10, y = 10 + heightSpacing * 9)
         
-        txt1 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
-        txt2 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
-        txt3 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
-        txt4 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
-        txt5 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
+        listkh = []
+        for row in dataKh:
+            listkh.append(row[0])
+        listnv = []
+        for row in dataNv:
+            if (row[0][0] == 'M'):
+                listnv.append(row[0])
+        stt = "PTP" + str(len(dataPhieuThue)+1).zfill(4)
+        txt1 = Label(inpPTP, font = ('Chirp', 10), height = 1, width = 40, text = stt)
+        txt2 = ttk.Combobox(inpPTP, values = listkh, font = ('Chirp', 10), height = 1, width = 37)
+        txt3 = ttk.Combobox(inpPTP, values = listnv, font = ('Chirp', 10), height = 1, width = 37)
+        listdv = []
+        for row in dataDv:
+            listdv.append(row[0])
+        txt5 = ttk.Combobox(inpPTP, values = listdv, font = ('Chirp', 10), height = 1, width = 37)
 
         txt6 = Calendar(inpPTP, selectmode = 'day', year = 2022, month = 5, day = 22, date_pattern="dd/mm/yyyy")
         txt7 = Calendar(inpPTP, selectmode = 'day', year = 2022, month = 5, day = 22, date_pattern="dd/mm/yyyy")
         i = IntVar()
         txt8 = Checkbutton(inpPTP, variable = i, text = 'Đã trả')
-        txt9 = Text(inpPTP, font = ('Chirp', 10), height = 1, width = 40)
-
+        listphg = []
+        for row in dataPh:
+            listphg.append(row[0])
+        txt9 = ttk.Combobox(inpPTP, values = listphg, font = ('Chirp', 10), height = 1, width = 37)
+        
         txt1.place(x = 100, y = 10 + heightSpacing * 0)
         txt2.place(x = 100, y = 10 + heightSpacing * 1)
         txt3.place(x = 100, y = 10 + heightSpacing * 2)
-        txt4.place(x = 100, y = 10 + heightSpacing * 2)
         txt5.place(x = 100, y = 10 + heightSpacing * 3)
         txt6.place(x = 100, y = 10 + heightSpacing * 4)
         txt7.place(x = 500, y = 10 + heightSpacing * 4)
@@ -657,10 +715,10 @@ def genNav():
         
         def addData():
             tmp = []
-            tmp.append(txt1.get("1.0",'end-1c'))
-            tmp.append(txt2.get("1.0",'end-1c'))
-            tmp.append(txt4.get("1.0",'end-1c'))
-            tmp.append(txt5.get("1.0",'end-1c'))
+            tmp.append(stt)
+            tmp.append(txt2.get())
+            tmp.append(txt3.get())
+            tmp.append(txt5.get())
             tmp1 = txt6.get_date()
             tmp2 = txt7.get_date()
             tmp3 = str(tmp1)
@@ -668,18 +726,23 @@ def genNav():
             tmp.append(tmp3)
             tmp.append(tmp4)
             if (i.get() == 1):
-                tmp.append(True)
+                tmp.append(1)
             else:
-                tmp.append(False)
+                tmp.append(0)
             global dataPhieuThue
             tmp.append(0)
             tmp.append(0)
             tmp.append(0)
-            tmp.append(txt9.get("1.0",'end-1c'))
+            for row in dataPh:
+                if (row[0] == txt9.get() and row[2] == 'maintaining'): 
+                    messagebox.showwarning(title="Cảnh báo", message = "Phòng đang bảo trì")
+                    return
+            
+            tmp.append(txt9.get())
             dataPhieuThue.append(tmp)
             messagebox.showwarning(title='Thông báo', message = 'Đã thêm thành công.')
             inpPTP.destroy()
-            genRight('phieuThue', True)
+            genRight('phieuThue', False)
             return
         def quitjob():
             inpPTP.destroy()
@@ -735,7 +798,7 @@ def genNav():
             tmp.append(txt6.get("1.0",'end-1c'))
             global dataPh
             dataPh.append(tmp)
-            genRight('phong', True)
+            genRight('phong', False)
             phg.destroy()
         def quitjob(): phg.destroy()
         but1 = Button(phg, text='Save', font = ('Chirp', 11), command =  addData)
@@ -793,7 +856,7 @@ def genNav():
             for i in range(0, 4): tmp.append('')
             global dataKh
             dataKh.append(tmp)
-            genRight('khachHang', True)
+            genRight('khachHang', False)
         def quitjob(): inpKh.destroy()
 
         but1 = Button(inpKh, text='Save', font = ('Chirp', 11), command =  addData)
@@ -803,10 +866,9 @@ def genNav():
         return
 
     def renderInpDv(e):
-        print('gone 2')
         inpDv = Toplevel(dashbrd)
         inpDv.title('Thông tin dịch vụ')
-        inpDv.geometry('400x380')
+        inpDv.geometry('400x200')
         lbl1 = Label(inpDv, font = ('Chirp', 10), text = 'ID')
         lbl2 = Label(inpDv, font = ('Chirp', 10), text = 'Tên dịch vụ')
         lbl3 = Label(inpDv, font = ('Chirp', 10), text = 'Chi phí')
@@ -835,12 +897,14 @@ def genNav():
                 tmp.append(int(txt3.get("1.0",'end-1c')))
             except ValueError:
                 messagebox.showwarning(title='Cảnh báo', message = 'Vui lòng nhập giá dịch vụ ở định dạng số.')
+                return
             for row in dataDv:
                 if (row[0] == txt1.get("1.0",'end-1c')):
                     messagebox.showwarning(title='Cảnh báo', message = 'ID dịch vụ đã tồn tại. Vui lòng dùng ID khác.')
                     return
             dataDv.append(tmp)
-            genRight('dichVu', True)
+            genRight('dichVu', False)
+            inpDv.destroy()
         def quitjob(): inpDv.destroy()
         but1 = Button(inpDv, text='Save', font = ('Chirp', 11), command =  addData)
         but2 = Button(inpDv, text='Cancel', font = ('Chirp', 11), command = quitjob)
@@ -850,15 +914,15 @@ def genNav():
 
     def renderInpProduct(e):
         inpPr = Toplevel(dashbrd)
-        inpPr.title(' Thông tin nhân viên')
-        inpPr.geometry('1000x900')
+        inpPr.title('Thêm thông tin thiết bị và thực phẩm')
+        inpPr.geometry('700x700')
         lbl1 = Label(inpPr, font = ('Chirp', 10), text = 'ID phiếu')
         lbl2 = Label(inpPr, font = ('Chirp', 10), text = 'ID hàng hóa')
         lbl3 = Label(inpPr, font = ('Chirp', 10), text = 'Tên hàng hóa')
         lbl4 = Label(inpPr, font = ('Chirp', 10), text = 'Số lượng')
         lbl5 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhà cung cấp')
         lbl6 = Label(inpPr, font = ('Chirp', 10), text = 'Tên nhà cung cấp')
-        lbl7 = Label(inpPr, font = ('Chirp', 10), text = 'ID nhân viên')
+        lbl7 = Label(inpPr, font = ('Chirp', 10), text = 'Nhà vận chuyển')
         lbl8 = Label(inpPr, font = ('Chirp', 10), text = 'Phí vận chuyển')
         lbl9 = Label(inpPr, font = ('Chirp', 10), text = 'Ngày nhập')
 
@@ -873,15 +937,22 @@ def genNav():
         lbl8.place(x = 10, y = 10 + heightSpacing * 7)
         lbl9.place(x = 10, y = 10 + heightSpacing * 8)
 
-        txt1 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        idSuggestion = "P" + str(len(phieuNhapTbAndFood)+1).zfill(3)
+        txt1 = Label(inpPr, text = idSuggestion, font = ('Chirp', 10), height = 1, width = 40)
         txt2 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
         txt3 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
-        txt4 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
-        txt5 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        amount = [*range (1, 300)]
+        txt4 = ttk.Combobox(inpPr, values = amount, font = ('Chirp', 10), height = 1, width = 37)
+        
+        supplier = []
+        for item in phieuNhapTbAndFood:
+            supplier.append(item[5])
+        txt5 = ttk.Combobox(inpPr, values = supplier, font = ('Chirp', 10), height = 1, width = 40)
         txt6 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
         txt7 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
         txt8 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
-        txt9 = Text(inpPr, font = ('Chirp', 10), height = 1, width = 40)
+        today = datetime.today().strftime('%d-%m-%Y')
+        txt9 = Label(inpPr, text = today, font = ('Chirp', 10), height = 1, width = 40)
 
         txt1.place(x = 125, y = 10 + heightSpacing * 0)
         txt2.place(x = 125, y = 10 + heightSpacing * 1)
@@ -894,18 +965,18 @@ def genNav():
         txt9.place(x = 125, y = 10 + heightSpacing * 8)
         def addData():
             tmp = []
-            tmp.append(txt1.get("1.0",'end-1c'))
+            tmp.append(idSuggestion)
             tmp.append(txt2.get("1.0",'end-1c'))
             tmp.append(txt3.get("1.0",'end-1c'))
-            tmp.append(txt4.get("1.0",'end-1c'))
+            tmp.append(txt4.get())
             tmp.append(txt5.get("1.0",'end-1c'))
             tmp.append(txt6.get("1.0",'end-1c'))
             tmp.append(txt7.get("1.0",'end-1c'))
             tmp.append(txt8.get("1.0",'end-1c'))
-            tmp.append(txt9.get("1.0",'end-1c'))
+            tmp.append(today)
             global phieuNhapTbAndFood
             phieuNhapTbAndFood.append(tmp)
-            genRight('pNhapTbiAndFood', True)
+            genRight('pNhapTbiAndFood', False)
             return
         def quitjob(): inpPr.destroy()
         but1 = Button(inpPr, text='Save', font = ('Chirp', 11), command =  addData)
@@ -918,6 +989,7 @@ def genNav():
     refreshBut.place(x = 960, y = 105)
     deleteBut = Button(dashbrd, text = 'Delete', bg = 'white')
     deleteBut.place(x = 1020, y = 105)
+
     def deleteRow(e):
         if (chungTaDangODau == 'phieuThanhToan'):
             messagebox.showwarning(title='Cảnh báo', message='Chức năng không hỗ trợ.')
@@ -929,6 +1001,7 @@ def genNav():
         text.place(x = 10, y = 10)
         inp = Text(delFr, width = 30, padx = 5, pady = 5, height = 1)
         inp.place(x = 10, y = 50)
+
         def deleteAndExit():
             k = -1
             try:
@@ -938,42 +1011,34 @@ def genNav():
             if (chungTaDangODau == 'phieuThue'):
                 global dataPhieuThue
                 del dataPhieuThue[k-1]
-                genRight('phieuThue', True)
+                genRight('phieuThue', False)
             if (chungTaDangODau == 'nhanVien'):
                 global dataNv
                 del dataNv[k-1]
-                genRight('nhanVien', True)
+                genRight('nhanVien', False)
             if (chungTaDangODau == 'phong'):
                 global dataPh
                 del dataPh[k-1]
-                genRight('phong', True)
+                genRight('phong', False)
             if (chungTaDangODau == 'khachHang'):
                 global dataKh
                 del dataKh[k-1]
-                genRight('khachHang', True)
+                genRight('khachHang', False)
             if (chungTaDangODau == 'dichVu'):
                 global dataDv
                 del dataDv[k-1]
-                genRight('dichVu', True)
+                genRight('dichVu', False)
             if (chungTaDangODau == 'pNhapTbiAndFood'):
                 global phieuNhapTbAndFood
                 del phieuNhapTbAndFood[k-1]
-                genRight('pNhapTbiAndFood', True)
+                genRight('pNhapTbiAndFood', False)
             inp.destroy()
         save = Button(delFr, text = 'Delete', command = deleteAndExit)
         save.place(x = 120, y = 100)
         return
     deleteBut.bind("<Button-1>", deleteRow)
     
-    addBut1 = Button(
-        dashbrd,
-        image = icoAdd,
-        font = ('Chirp', 14),
-        bg = 'white',
-        border = '1px solid black'
-    )
-    addBut1.bind("<Button-1>", renderInpPhieuThue)
-    addBut1.place(x=340, y=110)
+    
     def notavailable():
         messagebox.showwarning(title='Thông báo', message='Hóa đơn tự động sinh từ phiếu thuê phòng.')
         return
@@ -1033,6 +1098,7 @@ def genNav():
         genRight('pNhapTbiAndFood', False), genBotBut('pNhapTbiAndFood')
         refreshBut.bind("<Button-1>", temp7)
         addBut1.bind("<Button-1>", renderInpProduct)
+
     def thongke():
         fig = matplotlib.figure.Figure(figsize=(5,5))
         ax = fig.add_subplot(111)
@@ -1061,6 +1127,17 @@ def genNav():
         # refreshBut.bind("<Button-1>", temp8)
 
 
+
+    addBut1 = Button(
+        dashbrd,
+        image = icoAdd,
+        font = ('Chirp', 14),
+        bg = 'white',
+        border = '1px solid black',
+        # text = "Add"
+    )
+    addBut1.bind("<Button-1>", renderInpPhieuThue)
+    addBut1.place(x=340, y=110)
 
     def onclickEffectAndGuide():
         
@@ -1346,6 +1423,35 @@ def genBotBut(strTable):
     dataTblList4GenRight = json.loads(dataTbl4GenRight)
     # print(dataTblList4GenRight[0][0])
 
+    def exportXlsx():
+        cur = con.cursor()
+        cur.execute("SELECT * FROM {}".format(strTable))
+        con.commit()
+        resultToPrint = cur.fetchall()
+        if (strTable == 'phieuThue'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = ptpHeader)
+        elif (strTable == 'phieuThanhToan'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = pttHeader)
+        elif (strTable == 'nhanVien'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = nvHeader)
+        elif (strTable == 'dichVu'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = dvHeader)
+        elif (strTable == 'khachHang'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = khHeader)
+        elif (strTable == 'phong'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = phongHeader)
+        elif (strTable == 'pNhapTbiAndFood'):
+            tableDataFrame = pandas.DataFrame(resultToPrint, columns = pnHeader)
+        
+        tableDataFrame.to_excel('qlks.xlsx', sheet_name='sheet1', index=False)
+        wb = openpyxl.load_workbook(filename = "qlks.xlsx")
+        worksheet = wb.active
+        for column in ascii_uppercase:
+            worksheet.column_dimensions[column].width = 25
+        wb.save('qlks.xlsx')
+        messagebox.showwarning(title = "Thông báo", message = "Đã export thành công.")
+        return
+
     saveBotBut = Button(
         dashbrd,
         font = ('Chirp', 14),
@@ -1354,6 +1460,16 @@ def genBotBut(strTable):
         border = '1px solid black',
         height = 1,
         width = 7
+    )
+    exportXlsxBotBut = Button(
+        dashbrd,
+        font = ('Chirp', 14),
+        text = 'Export Xlsx',
+        bg = 'white',
+        border = '1px solid black',
+        height = 1,
+        width = 20,
+        command = exportXlsx
     )
     def printSelectedRow():
         data2Print = []
@@ -1402,12 +1518,19 @@ def genBotBut(strTable):
 
         pdf.set_left_margin(40)
         for i in range(0, len(pttHeader)-3):
-            if (not i in [2, 3]):
+            if (i == 1):
+                pdf.cell(28, 10, "Tên dịch vụ", border=1)
+            elif (not i in [2, 3]):
                 pdf.cell(28, 10, str(pttHeader[i]), border=1)
         pdf.ln(10)
-        print(data2Print)
         for i in range(0, len(data2Print)-3):
-            if (i != 2 and i != 3):
+            if (i == 1):
+                tempdv = ""
+                for item in dataDv:
+                    if (data2Print[i] == item[0]):
+                        tempdv = item[1]
+                pdf.cell(28, 10, tempdv, border=1)
+            elif (i != 2 and i != 3):
                 pdf.cell(28, 10, str(data2Print[i]), border=1)
         pdf.ln(10)
 
@@ -1669,6 +1792,7 @@ def genBotBut(strTable):
                     '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], str(row[6]), row[7], row[8], row[9], row[10])
                 )
             con.commit()
+            fetchFromDb()
         elif (strTable == 'phieuThanhToan'):
             try:
                 cur.execute('drop table '+strTable)
@@ -1772,6 +1896,7 @@ def genBotBut(strTable):
                     '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
                 )
             con.commit()
+            fetchFromDb()
         elif (strTable == 'dichVu'):
             try:
                 cur.execute('drop table '+strTable)
@@ -1818,6 +1943,7 @@ def genBotBut(strTable):
                     '''.format(strTable, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
                 )
             con.commit()
+            fetchFromDb()
         cur.execute('''
                     SELECT * FROM {}
                 '''.format(strTable))
@@ -1831,7 +1957,8 @@ def genBotBut(strTable):
     saveBotBut.bind("<Button-1>", parseAndSave)
     # end binding
 
-    saveBotBut.place(x=750, y=630)
+    saveBotBut.place(x=775, y=630)
+    exportXlsxBotBut.place(x = 500, y = 630)
     exportBotBut.place(x=900, y=630)
 
     srhBox1.place(x=390, y=110)
@@ -1983,6 +2110,7 @@ myLoginUI.renderFrame()
 
 if (loggedIn):
     dashbrd = Tk()
+    genTopBanner()
     global icoAdd
     rawIcoAdd = Image.open('./img/add.png')
     rawIcoAdd = rawIcoAdd.resize((20, 20), Image.Resampling.LANCZOS)
@@ -1991,7 +2119,6 @@ if (loggedIn):
     # startKeyListener()
     genDashUI()
     genNav()
-    genTopBanner()
     genRight('phieuThue', False)
     genBotBut('phieuThue')
     dashbrd.mainloop()
