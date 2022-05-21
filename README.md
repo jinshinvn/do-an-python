@@ -1,7 +1,5 @@
 # Phần mềm quản lý khách sạn
 
-**Lưu ý: Đồ án công nghệ phần mềm (Quản lý shop cafe) nằm ở link: https://github.com/jinshinvn/doAnCNPM**
-
 ## 🔸 Giới thiệu
 
 Đồ án "Quản lý khách sạn" giữa kỳ môn "Lập trình Python" tại trường đại học Sài Gòn
