@@ -13,8 +13,6 @@ class View_control_panel:
       return
    pass
 
-
-
 def render_login_ui():
    loginui = Login_ui()
    loginui_fr = loginui.build(1024, 576 , 150, 75)
