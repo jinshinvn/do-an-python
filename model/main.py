@@ -1,4 +1,0 @@
-class Handler:
-   # @staticmethod
-   
-   pass
